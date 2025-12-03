@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quarten Ibirapuera | The Rare Collection</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23261019%22 rx=%2220%22/><text y=%2275%22 x=%2250%22 text-anchor=%22middle%22 font-family=%22%27Cinzel%27, serif%22 font-weight=%22bold%22 font-size=%2280%22 fill=%22%23c5a065%22>Q</text></svg>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +19,7 @@
             --bg-dark: #0f0f0f;
             --bg-card: #141414;
             
-            /* Dourado Champagne (Mais suave) */
+            /* Dourado Champagne */
             --gold: #c5a065; 
             --gold-dim: #8c734b;
             
@@ -29,12 +30,12 @@
             --font-body: 'Manrope', sans-serif;
             --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
 
-            /* Paleta Trisul Suavizada */
+            /* Paleta Trisul */
             --bg-vinhoTrisul1: #3d222d;
             --bg-vinhoTrisul2: #261019; 
             --bg-begeTrisul: #dee0d2;
             
-            /* Cores dos Pins do Mapa */
+            /* Cores dos Pins */
             --pin-nature: #5fa875; 
             --pin-health: #e0e0e0; 
             --pin-culture: #c5a065; 
@@ -48,7 +49,7 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             font-family: var(--font-body);
-            overflow-x: hidden; /* Previne scroll horizontal global */
+            overflow-x: hidden;
             cursor: none;
             width: 100%;
         }
@@ -245,7 +246,7 @@
             position: absolute; top: -3rem; left: 0; line-height: 1;
         }
 
-        /* --- PLANTAS --- */
+        /* --- PLANTAS & CAROUSEL --- */
         .plans-section { padding: 10rem 10%; background-color: var(--bg-card); }
         .plans-header { margin-bottom: 4rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 2rem; }
         .plans-tabs { display: flex; gap: 2rem; }
@@ -255,17 +256,63 @@
         }
         .plan-tab.active { color: var(--gold); }
         .plan-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--gold); }
+        
         .plan-display-area {
             display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; opacity: 0;
             transform: translateY(20px); transition: all 0.5s ease; display: none;
         }
         .plan-display-area.active { display: grid; opacity: 1; transform: translateY(0); }
-        .plan-image-box { background: #151515; padding: 2rem; border: 1px solid #222; }
-        .plan-image-box img { width: 100%; height: auto; filter: invert(1) grayscale(1); opacity: 0.8; }
-        .plan-details ul { list-style: none; margin-top: 2rem; }
-        .plan-details li {
-            padding: 1rem 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; color: var(--text-main);
+
+        /* Carousel Styles */
+        .plan-carousel-container {
+            position: relative; width: 100%; height: 0; padding-bottom: 75%; /* Ratio 4:3 */
+            background: #151515; border: 1px solid #222; overflow: hidden;
         }
+        .plan-carousel-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .plan-slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .plan-slide.active { opacity: 1; pointer-events: all; z-index: 1; }
+        .plan-slide img {
+            width: 100%; height: 100%; object-fit: contain; padding: 1rem;
+            filter: invert(1) grayscale(1);
+        }
+        /* Remove filter for real images */
+        .plan-slide img[src*=".webp"], .plan-slide img[src*=".jpg"], .plan-slide img[src*=".png"] {
+            filter: none; object-fit: cover; padding: 0;
+        }
+        .slide-caption {
+            position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7); color: #fff; padding: 5px 15px;
+            font-size: 0.8rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .carousel-nav {
+            position: absolute; bottom: 1rem; right: 1rem; z-index: 10; display: flex; gap: 10px;
+        }
+        .nav-btn {
+            background: rgba(197, 160, 101, 0.1); border: 1px solid var(--gold); color: var(--gold);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            font-size: 1.2rem; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .nav-btn:hover { background: var(--gold); color: #000; }
+
+        /* Ficha Técnica */
+        .plan-details ul { 
+            list-style: none; margin-top: 2rem; 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; 
+        }
+        .plan-details li {
+            padding: 0; border: none; display: flex; flex-direction: column; color: var(--text-main);
+        }
+        .plan-details li span.label {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-sub); margin-bottom: 0.3rem;
+        }
+        .plan-details li span.value {
+            font-size: 1.1rem; font-weight: 500; color: #fff;
+        }
+        .plan-details li span.gold-text { color: var(--gold); }
 
         /* --- TEAM --- */
         .team-section { padding: 10rem 10%; border-top: 1px solid #222; }
@@ -345,51 +392,29 @@
 
         /* --- TRUST BANNER --- */
         .trust-banner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6rem;
-            flex-wrap: wrap;
-            background-color: var(--bg-vinhoTrisul2);
-            padding: 4rem 10%;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; justify-content: center; align-items: center; gap: 6rem; flex-wrap: wrap;
+            background-color: var(--bg-vinhoTrisul2); padding: 4rem 10%; border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         .trust-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.9;
-            transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.9; transition: 0.3s;
         }
         .trust-item:hover { opacity: 1; transform: translateY(-5px); }
         .trust-label {
             font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-sub);
             margin-bottom: 1.5rem; display: block; font-family: var(--font-body);
         }
-        /* LOGO TRISUL */
         .trisul-logo-container { display: flex; align-items: center; gap: 12px; }
         .trisul-icon { width: 45px; height: 45px; }
-        .trisul-text {
-            font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.2rem;
-            color: #fff; letter-spacing: -1px; line-height: 1;
-        }
-        /* LOGO BM REALTY */
+        .trisul-text { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.2rem; color: #fff; letter-spacing: -1px; line-height: 1; }
         .bm-logo-wrapper { display: flex; flex-direction: column; align-items: center; }
         .bm-box {
             background-color: #2b334d; width: 90px; height: 90px; border-radius: 12px;
             display: flex; align-items: flex-end; justify-content: flex-start;
             padding: 10px 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .bm-text {
-            color: #fff; font-family: sans-serif; font-size: 3rem; font-weight: 700;
-            line-height: 0.8; letter-spacing: -2px;
-        }
+        .bm-text { color: #fff; font-family: sans-serif; font-size: 3rem; font-weight: 700; line-height: 0.8; letter-spacing: -2px; }
         .bm-dot { color: #00bfa5; font-size: 3rem; line-height: 0.8; }
-        .bm-realty {
-            margin-top: 8px; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 4px;
-            color: #fff; font-weight: 600; text-transform: uppercase;
-        }
+        .bm-realty { margin-top: 8px; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 4px; color: #fff; font-weight: 600; text-transform: uppercase; }
 
         /* --- FOOTER --- */
         footer { padding: 5rem 10%; text-align: center; border-top: 1px solid #222; color: #666; background-color: #1a0b12; }
@@ -405,26 +430,16 @@
 
         /* --- POPUP DE CONTATO --- */
         .popup-overlay { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.2); 
-            backdrop-filter: blur(25px); 
-            -webkit-backdrop-filter: blur(25px);
-            z-index: 10000; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 1rem; 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            z-index: 10000; align-items: center; justify-content: center; padding: 1rem; 
         }
         .popup-overlay.active { display: flex; }
         .popup-content { 
-            background: linear-gradient(145deg, #1f1f1f, #141414); 
-            border: 1px solid var(--gold-dim); 
+            background: linear-gradient(145deg, #1f1f1f, #141414); border: 1px solid var(--gold-dim); 
             padding: 3rem; border-radius: 8px; max-width: 50rem; width: 100%; 
             position: relative; transform: scale(0.95); opacity: 0; 
-            transition: all 0.5s var(--ease-expo); color: #fff; 
-            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            transition: all 0.5s var(--ease-expo); color: #fff; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
         }
         .popup-overlay.active .popup-content { transform: scale(1); opacity: 1; }
         
@@ -486,55 +501,33 @@
 
         /* --- MEDIA QUERIES (MOBILE FIXES) --- */
         @media (max-width: 768px) {
-            /* AJUSTE DE PADDING GERAL PARA NÃO ESTOURAR */
-            .asym-section, .plans-section, .team-section, .stats-section, .cta-final-section, .trust-banner {
-                padding: 5rem 5%; /* Reduzido de 10rem 10% */
-            }
-
+            .asym-section, .plans-section, .team-section, .stats-section, .cta-final-section, .trust-banner { padding: 5rem 5%; }
             header { padding: 1.5rem; }
             .menu-overlay { grid-template-columns: 1fr; }
             .menu-visuals { display: none; }
             .menu-nav-container { padding-left: 0; align-items: center; }
             .asym-grid { grid-template-columns: 1fr; gap: 0; }
             .floating-content { margin: -50px 20px 0 20px; padding: 2rem; }
-            
-            /* Scroll Resort Fix */
             .horizontal-scroll-container { height: auto; }
             .sticky-wrapper { position: relative; height: auto; display: block; }
             .horizontal-track { flex-direction: column; padding: 2rem; gap: 4rem; transform: none !important; }
             .gallery-card { width: 100%; height: 50vh; border: 1px solid #333; margin-bottom: 2rem; }
-            
-            /* CORREÇÃO STATS: Mudar grid para 1 coluna */
-            .stats-section {
-                grid-template-columns: 1fr; /* Estava quebrando com flex-direction em grid */
-                gap: 3rem;
-            }
-
-            /* CORREÇÃO TRUST BANNER */
+            .stats-section { grid-template-columns: 1fr; gap: 3rem; }
             .trust-banner { gap: 4rem; flex-direction: column; align-items: center; }
             .trust-item { margin-bottom: 2rem; }
-
             .marquee-text { font-size: 4rem; }
             .cursor-dot, .cursor-circle { display: none; }
             .region-overlay { bottom: 2rem; left: 1rem; right: 1rem; width: auto; max-width: none; text-align: center; padding: 2rem; }
             
-            /* CORREÇÃO PLANS (PLANTAS): Forçar 1 coluna */
+            /* PLAN FIXES MOBILE */
             .plans-header { flex-direction: column; align-items: flex-start; }
             .plans-tabs { width: 100%; overflow-x: auto; padding-bottom: 10px; }
-            .plan-display-area { 
-                grid-template-columns: 1fr; /* Força imagem e texto um embaixo do outro */
-                gap: 2rem;
-            }
-            .plan-image-box { padding: 1rem; }
+            .plan-display-area { grid-template-columns: 1fr; gap: 2rem; }
+            .plan-carousel-container { padding-bottom: 75%; } /* Keep aspect ratio */
+            .plan-details ul { grid-template-columns: 1fr 1fr; gap: 1rem; } 
             
-            /* CORREÇÃO POPUP: Limitar largura */
-            .popup-content { 
-                padding: 2rem 1.5rem; 
-                max-height: 90vh; 
-                overflow-y: auto; 
-                width: 95%; /* Impede overflow horizontal */
-                margin: 0 auto;
-            }
+            /* POPUP FIXES MOBILE */
+            .popup-content { padding: 2rem 1.5rem; max-height: 90vh; overflow-y: auto; width: 95%; margin: 0 auto; }
             .broker-container { flex-direction: column; gap: 2rem; }
             .broker-info { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 2rem; width: 100%; }
             .contact-details { text-align: center; }
@@ -587,7 +580,7 @@
         <img src="media/hero.jpg" class="hero-video-bg" alt="Background">
         <div class="hero-content">
             <span class="subtitle">The Rare Collection</span>
-            <h1>Um Oásis Urbano <br> <span style="font-style:italic; font-family:var(--font-body); font-weight:200; font-size: 0.7em;"></span> 6.000m²</h1>
+            <h1><span style="font-size: 0.4em;">DESIGN E NATUREZA.</span><br> <span style="font-style:italic; font-family:var(--font-body); font-weight:200; font-size: 0.8em;"></span>Quarten</h1>
             <p>Um quarteirão inteiro desenhado para redefinir o privilégio de viver no Ibirapuera.</p>
         </div>
     </section>
@@ -626,8 +619,8 @@
                     <span class="card-num">01</span>
                     <img src="media/quadra.webp" alt="Quadra de Tênis">
                     <div class="card-info">
-                        <h3>Quadra de Tênis</h3>
-                        <p>Saibro Oficial e Lounge</p>
+                        <h3>Quadra Oficial</h3>
+                        <p>Medidas Oficiais (36x18m)</p>
                     </div>
                 </div>
 
@@ -644,8 +637,8 @@
                     <span class="card-num">03</span>
                     <img src="media/fitness.webp" alt="Academia">
                     <div class="card-info">
-                        <h3>Fitness Center</h3>
-                        <p>Alta Performance e Design</p>
+                        <h3>Fitness by SETT</h3>
+                        <p>Consultoria SETT Academia</p>
                     </div>
                 </div>
 
@@ -700,37 +693,101 @@
                 <button class="plan-tab" onclick="switchPlan('duplex')">Duplex</button>
             </div>
         </div>
+
         <div class="plan-display-area active" id="plan-164">
-            <div class="plan-image-box hover-target"><img src="https://placehold.co/800x600/transparent/white?text=Planta+164m" alt="Planta 164m"></div>
+            <div class="plan-carousel-container">
+                <div class="plan-carousel-track" id="track-164">
+                    <div class="plan-slide active">
+                        <img src="media/164m2planta.webp" alt="Planta 164m">
+                        <span class="slide-caption">Planta Técnica</span>
+                    </div>
+                    <div class="plan-slide">
+                        <img src="media/ape2.webp" alt="Living 164m">
+                        <span class="slide-caption">Perspectiva Living</span>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="nav-btn prev" onclick="moveSlide('164', -1)">←</button>
+                    <button class="nav-btn next" onclick="moveSlide('164', 1)">→</button>
+                </div>
+            </div>
+
             <div class="plan-details">
                 <h3 style="font-size: 2rem; color: #fff;">Apartamento 164m²</h3>
-                <p>O equilíbrio perfeito entre sofisticação e funcionalidade, com integração total ao terraço.</p>
+                <p>O equilíbrio perfeito. Terraço gourmet com churrasqueira a carvão e suíte máster com closet.</p>
                 <ul>
-                    <li><span>Área Privativa</span> <span class="gold-text">164m²</span></li>
-                    <li><span>Suítes</span> <span>3 ou 4</span></li>
-                </ul><a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
+                    <li><span class="label">Área Privativa</span> <span class="value gold-text">164m²</span></li>
+                    <li><span class="label">Configuração</span> <span class="value">4 Dorms ou 3 Suítes</span></li>
+                    <li><span class="label">Vagas</span> <span class="value">2 Determinadas</span></li>
+                    <li><span class="label">Diferencial</span> <span class="value">Churrasqueira Carvão</span></li>
+                </ul>
+                <a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
             </div>
         </div>
+
         <div class="plan-display-area" id="plan-207">
-            <div class="plan-image-box hover-target"><img src="https://placehold.co/800x600/transparent/white?text=Planta+207m" alt="Planta 207m"></div>
+            <div class="plan-carousel-container">
+                <div class="plan-carousel-track" id="track-207">
+                    <div class="plan-slide active">
+                        <img src="media/207m2planta.webp" alt="Planta 207m">
+                        <span class="slide-caption">Planta Técnica</span>
+                    </div>
+                    <div class="plan-slide">
+                        <img src="media/ape.webp" alt="Living 207m">
+                        <span class="slide-caption">Perspectiva Living</span>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="nav-btn prev" onclick="moveSlide('207', -1)">←</button>
+                    <button class="nav-btn next" onclick="moveSlide('207', 1)">→</button>
+                </div>
+            </div>
+
             <div class="plan-details">
                 <h3 style="font-size: 2rem; color: #fff;">Apartamento 207m²</h3>
-                <p>Espaços generosos que emolduram o skyline do Ibirapuera. A definição de morar bem.</p>
+                <p>Exclusividade total. 4 Suítes, sala íntima e master com previsão para banheira.</p>
                 <ul>
-                    <li><span>Área Privativa</span> <span class="gold-text">207m²</span></li>
-                    <li><span>Suítes</span> <span>4</span></li>
-                </ul><a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
+                    <li><span class="label">Área Privativa</span> <span class="value gold-text">207m²</span></li>
+                    <li><span class="label">Configuração</span> <span class="value">4 Suítes + Sala Íntima</span></li>
+                    <li><span class="label">Vagas</span> <span class="value">3 Determinadas</span></li>
+                    <li><span class="label">Exclusividade</span> <span class="value">Hall Privativo</span></li>
+                </ul>
+                <a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
             </div>
         </div>
+
         <div class="plan-display-area" id="plan-duplex">
-            <div class="plan-image-box hover-target"><img src="https://placehold.co/800x600/transparent/white?text=Planta+Penthouse" alt="Planta Duplex"></div>
+            <div class="plan-carousel-container">
+                <div class="plan-carousel-track" id="track-duplex">
+                    <div class="plan-slide active">
+                        <img src="media/395m2planta-inferior.webp" alt="Planta Inferior">
+                        <span class="slide-caption">Pavimento Inferior</span>
+                    </div>
+                    <div class="plan-slide">
+                        <img src="media/395m2planta-superior.webp" alt="Planta Superior">
+                        <span class="slide-caption">Pavimento Superior</span>
+                    </div>
+                    <div class="plan-slide">
+                        <img src="media/duplex.webp" alt="Perspectiva Duplex">
+                        <span class="slide-caption">Perspectiva Terraço</span>
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="nav-btn prev" onclick="moveSlide('duplex', -1)">←</button>
+                    <button class="nav-btn next" onclick="moveSlide('duplex', 1)">→</button>
+                </div>
+            </div>
+
             <div class="plan-details">
                 <h3 style="font-size: 2rem; color: #fff;">Cobertura Duplex</h3>
-                <p>O topo do mundo. Uma mansão suspensa com pé direito duplo e piscina privativa.</p>
+                <p>Mansão suspensa. Lazer privativo no piso superior com piscina ou SPA.</p>
                 <ul>
-                    <li><span>Área Privativa</span> <span class="gold-text">395m²</span></li>
-                    <li><span>Lazer</span> <span>Piscina Privativa</span></li>
-                </ul><a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
+                    <li><span class="label">Área Privativa</span> <span class="value gold-text">306 a 395m²</span></li>
+                    <li><span class="label">Configuração</span> <span class="value">4 Suítes</span></li>
+                    <li><span class="label">Vagas</span> <span class="value">3 ou 4 Vagas</span></li>
+                    <li><span class="label">Lazer Privado</span> <span class="value">Piscina ou SPA</span></li>
+                </ul>
+                <a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
             </div>
         </div>
     </section>
@@ -760,7 +817,7 @@
             <p>Terreno Exclusivo</p>
         </div>
         <div class="stat-item hover-target">
-            <h3>500m</h3>
+            <h3>8 minutos</h3>
             <p>Do Parque Ibirapuera</p>
         </div>
         <div class="stat-item hover-target">
@@ -986,6 +1043,29 @@
             event.target.classList.add('active');
             document.querySelectorAll('.plan-display-area').forEach(area => area.classList.remove('active'));
             setTimeout(() => { document.getElementById('plan-' + planId).classList.add('active'); }, 100);
+        }
+
+        // --- 5.1 CARROSSEL DE PLANTAS ---
+        function moveSlide(planId, direction) {
+            const track = document.getElementById('track-' + planId);
+            const slides = track.querySelectorAll('.plan-slide');
+            let activeIndex = 0;
+
+            // Encontra o slide ativo atual
+            slides.forEach((slide, index) => {
+                if (slide.classList.contains('active')) {
+                    activeIndex = index;
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Calcula o próximo índice (loop infinito)
+            let nextIndex = activeIndex + direction;
+            if (nextIndex >= slides.length) nextIndex = 0;
+            if (nextIndex < 0) nextIndex = slides.length - 1;
+
+            // Ativa o próximo slide
+            slides[nextIndex].classList.add('active');
         }
 
         // --- 6. MAPA LEAFLET (CURADO & LIMPO) ---
