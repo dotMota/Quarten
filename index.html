@@ -48,9 +48,9 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             font-family: var(--font-body);
-            overflow-x: hidden;
+            overflow-x: hidden; /* Previne scroll horizontal global */
             cursor: none;
-            overflow: hidden; 
+            width: 100%;
         }
         
         body.popup-open { overflow: hidden; }
@@ -173,7 +173,7 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
             opacity: 0.4; transform: scale(1.1); animation: breathe 10s infinite alternate ease-in-out;
         }
-        .hero-content { position: relative; z-index: 2; text-align: center; mix-blend-mode: color-dodge; }
+        .hero-content { position: relative; z-index: 2; text-align: center; mix-blend-mode: color-dodge; padding: 0 1rem; }
         .hero h1 {
             font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -2px; opacity: 0;
             transform: translateY(50px); animation: slideUp 1.2s var(--ease-expo) forwards 0.5s;
@@ -342,125 +342,54 @@
             text-decoration: none; text-transform: uppercase; letter-spacing: 3px; transition: 0.4s var(--ease-expo); cursor: pointer;
         }
         .cta-btn-large:hover { background: var(--gold); color: #000; padding: 1.5rem 5rem; }
-/* --- TRUST BANNER (CENTRALIZADO) --- */
-.trust-banner {
-    display: flex;
-    justify-content: center; /* Centraliza os itens horizontalmente */
-    align-items: center;     /* Centraliza os itens verticalmente (um em relação ao outro) */
-    gap: 6rem;               /* Espaço entre os dois logos */
-    flex-wrap: wrap;         /* Permite quebrar linha no celular */
-    
-    background-color: var(--bg-vinhoTrisul2);
-    padding: 4rem 10%;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
 
-.trust-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centraliza o texto "Realização" com o Logo */
-    justify-content: center;
-    opacity: 0.9;
-    transition: 0.3s;
-}
-
-.trust-item:hover {
-    opacity: 1;
-    transform: translateY(-5px);
-}
-
-/* Ajuste para celular */
-@media (max-width: 768px) {
-    .trust-banner {
-        gap: 3rem;
-        flex-direction: column; /* Um embaixo do outro no celular */
-    }
-}
-.trust-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    color: var(--text-sub);
-    margin-bottom: 1.5rem;
-    display: block;
-    font-family: var(--font-body);
-}
-
-/* --- LOGO TRISUL (CSS + SVG) --- */
-.trisul-logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.trisul-icon {
-    width: 45px;
-    height: 45px;
-}
-
-.trisul-text {
-    font-family: 'Inter', sans-serif; /* Fonte geométrica para o logo */
-    font-weight: 800;
-    font-size: 2.2rem;
-    color: #fff; /* Branco para o modo noturno */
-    letter-spacing: -1px;
-    line-height: 1;
-}
-
-/* --- LOGO BM REALTY (CSS PURO) --- */
-.bm-logo-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.bm-box {
-    background-color: #2b334d; /* Azul Escuro da BM */
-    width: 90px;
-    height: 90px;
-    border-radius: 12px;
-    display: flex;
-    align-items: flex-end; /* Texto bm fica embaixo */
-    justify-content: flex-start;
-    padding: 10px 12px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-.bm-text {
-    color: #fff;
-    font-family: sans-serif;
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 0.8;
-    letter-spacing: -2px;
-}
-
-.bm-dot {
-    color: #00bfa5; /* Verde do ponto */
-    font-size: 3rem;
-    line-height: 0.8;
-}
-
-.bm-realty {
-    margin-top: 8px;
-    font-family: sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 4px;
-    color: #fff;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-/* Ajuste Mobile */
-@media (max-width: 768px) {
-    .trust-banner {
-        gap: 4rem;
-        flex-direction: column;
-        align-items: center;
-    }
-    .trust-item { margin-bottom: 2rem; }
-}
+        /* --- TRUST BANNER --- */
+        .trust-banner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6rem;
+            flex-wrap: wrap;
+            background-color: var(--bg-vinhoTrisul2);
+            padding: 4rem 10%;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+            transition: 0.3s;
+        }
+        .trust-item:hover { opacity: 1; transform: translateY(-5px); }
+        .trust-label {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--text-sub);
+            margin-bottom: 1.5rem; display: block; font-family: var(--font-body);
+        }
+        /* LOGO TRISUL */
+        .trisul-logo-container { display: flex; align-items: center; gap: 12px; }
+        .trisul-icon { width: 45px; height: 45px; }
+        .trisul-text {
+            font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.2rem;
+            color: #fff; letter-spacing: -1px; line-height: 1;
+        }
+        /* LOGO BM REALTY */
+        .bm-logo-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .bm-box {
+            background-color: #2b334d; width: 90px; height: 90px; border-radius: 12px;
+            display: flex; align-items: flex-end; justify-content: flex-start;
+            padding: 10px 12px; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .bm-text {
+            color: #fff; font-family: sans-serif; font-size: 3rem; font-weight: 700;
+            line-height: 0.8; letter-spacing: -2px;
+        }
+        .bm-dot { color: #00bfa5; font-size: 3rem; line-height: 0.8; }
+        .bm-realty {
+            margin-top: 8px; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 4px;
+            color: #fff; font-weight: 600; text-transform: uppercase;
+        }
 
         /* --- FOOTER --- */
         footer { padding: 5rem 10%; text-align: center; border-top: 1px solid #222; color: #666; background-color: #1a0b12; }
@@ -474,7 +403,7 @@
         }
         .btn-line:hover::after { transform: scaleX(1); transform-origin: left; }
 
-        /* --- POPUP DE CONTATO (ESTILO REFINADO) --- */
+        /* --- POPUP DE CONTATO --- */
         .popup-overlay { 
             display: none; 
             position: fixed; 
@@ -521,7 +450,6 @@
         .contact-btn { width: 100%; padding: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; background: transparent; cursor: pointer; margin-bottom: 1rem; border-radius: 2px; }
         .contact-btn:hover { background: var(--gold); border-color: var(--gold); color: #000; }
         
-        /* Botão WhatsApp mais suave */
         .whatsapp-btn { background: rgba(37, 211, 102, 0.1); border-color: #25d366; color: #25d366; z-index: 10; position: relative;}
         .whatsapp-btn:hover { background: #25d366; color: #fff; border-color: #25d366; }
         
@@ -529,92 +457,25 @@
         .social-link { color: var(--text-sub); transition: 0.3s; }
         .social-link:hover { color: var(--gold); transform: translateY(-2px); }
 
-        /* Dynamic Container for QR Swap */
-        .dynamic-actions-wrapper {
-            position: relative;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .default-actions, .qr-actions {
-            width: 100%;
-            transition: all 0.4s ease;
-        }
-
-        /* Default State */
-        .default-actions {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-            position: relative;
-        }
-
+        .dynamic-actions-wrapper { position: relative; width: 100%; margin-top: 1rem; }
+        .default-actions, .qr-actions { width: 100%; transition: all 0.4s ease; }
+        .default-actions { opacity: 1; transform: translateY(0); pointer-events: all; position: relative; }
         .qr-actions {
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(255,255,255,0.03);
-            padding: 1rem;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.05);
+            position: absolute; top: 0; left: 0; opacity: 0; transform: translateY(20px); pointer-events: none;
+            display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.03);
+            padding: 1rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);
         }
-
-        /* Active QR State */
-        .active-qr .default-actions {
-            opacity: 0;
-            transform: translateY(-20px);
-            pointer-events: none;
-            position: absolute;
-        }
-
-        .active-qr .qr-actions {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-            position: relative;
-        }
-
+        .active-qr .default-actions { opacity: 0; transform: translateY(-20px); pointer-events: none; position: absolute; }
+        .active-qr .qr-actions { opacity: 1; transform: translateY(0); pointer-events: all; position: relative; }
         .whatsapp-qr-text { font-size: 0.85rem; color: #aaa; line-height: 1.4; text-align: center; margin-bottom: 1rem; }
         .whatsapp-qr-text strong { display: block; margin-bottom: 0.3rem; color: #fff; }
         .qr-img { width: 120px; height: 120px; margin-bottom: 1rem; border: 4px solid #fff; border-radius: 4px; }
-
-        /* Botão dentro do QR Container */
         .whatsapp-web-link {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background: #25d366;
-            color: white;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            width: 100%;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
+            display: inline-block; padding: 0.8rem 1.5rem; background: #25d366; color: white;
+            border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: 600;
+            width: 100%; text-align: center; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
         }
         .whatsapp-web-link:hover { background: #1da851; }
-
-        /* Responsive Popup */
-        @media (max-width: 768px) {
-            .broker-container { flex-direction: column; gap: 2rem; }
-            .broker-info { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 2rem; width: 100%; }
-            .popup-content { padding: 2rem 1.5rem; max-height: 90vh; overflow-y: auto; }
-            .contact-details { text-align: center; }
-            .contact-item { justify-content: center; }
-            
-            /* Correção de Alinhamento Mobile */
-            .broker-actions { width: 100%; align-items: center; }
-            .dynamic-actions-wrapper { width: 100%; }
-            .default-actions, .qr-actions { align-items: center; width: 100%; }
-        }
 
         /* Animações */
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -623,26 +484,64 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulsePin { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 80px; height: 80px; opacity: 0; } }
 
-        /* MEDIA QUERIES */
+        /* --- MEDIA QUERIES (MOBILE FIXES) --- */
         @media (max-width: 768px) {
+            /* AJUSTE DE PADDING GERAL PARA NÃO ESTOURAR */
+            .asym-section, .plans-section, .team-section, .stats-section, .cta-final-section, .trust-banner {
+                padding: 5rem 5%; /* Reduzido de 10rem 10% */
+            }
+
             header { padding: 1.5rem; }
             .menu-overlay { grid-template-columns: 1fr; }
             .menu-visuals { display: none; }
             .menu-nav-container { padding-left: 0; align-items: center; }
             .asym-grid { grid-template-columns: 1fr; gap: 0; }
             .floating-content { margin: -50px 20px 0 20px; padding: 2rem; }
+            
+            /* Scroll Resort Fix */
             .horizontal-scroll-container { height: auto; }
             .sticky-wrapper { position: relative; height: auto; display: block; }
             .horizontal-track { flex-direction: column; padding: 2rem; gap: 4rem; transform: none !important; }
             .gallery-card { width: 100%; height: 50vh; border: 1px solid #333; margin-bottom: 2rem; }
-            .stats-section, .trust-banner {
+            
+            /* CORREÇÃO STATS: Mudar grid para 1 coluna */
+            .stats-section {
+                grid-template-columns: 1fr; /* Estava quebrando com flex-direction em grid */
                 gap: 3rem;
-                flex-direction: column; /* Um embaixo do outro no celular */
             }
+
+            /* CORREÇÃO TRUST BANNER */
+            .trust-banner { gap: 4rem; flex-direction: column; align-items: center; }
+            .trust-item { margin-bottom: 2rem; }
+
             .marquee-text { font-size: 4rem; }
             .cursor-dot, .cursor-circle { display: none; }
             .region-overlay { bottom: 2rem; left: 1rem; right: 1rem; width: auto; max-width: none; text-align: center; padding: 2rem; }
-            .cta-final-section { padding: 5rem 5%; }
+            
+            /* CORREÇÃO PLANS (PLANTAS): Forçar 1 coluna */
+            .plans-header { flex-direction: column; align-items: flex-start; }
+            .plans-tabs { width: 100%; overflow-x: auto; padding-bottom: 10px; }
+            .plan-display-area { 
+                grid-template-columns: 1fr; /* Força imagem e texto um embaixo do outro */
+                gap: 2rem;
+            }
+            .plan-image-box { padding: 1rem; }
+            
+            /* CORREÇÃO POPUP: Limitar largura */
+            .popup-content { 
+                padding: 2rem 1.5rem; 
+                max-height: 90vh; 
+                overflow-y: auto; 
+                width: 95%; /* Impede overflow horizontal */
+                margin: 0 auto;
+            }
+            .broker-container { flex-direction: column; gap: 2rem; }
+            .broker-info { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 2rem; width: 100%; }
+            .contact-details { text-align: center; }
+            .contact-item { justify-content: center; }
+            .broker-actions { width: 100%; align-items: center; }
+            .dynamic-actions-wrapper { width: 100%; }
+            .default-actions, .qr-actions { align-items: center; width: 100%; }
         }
     </style>
 </head>
