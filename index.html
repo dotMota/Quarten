@@ -1,32 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quarten Ibirapuera | Experience</title>
-    
+    <title>Quarten Ibirapuera | The Rare Collection</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Manrope:wght@200;300;400;500&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
     <style>
         /* --- CORE SETTINGS --- */
         :root {
-            --bg-dark: #080808;
-            --bg-card: #111;
-            --gold: #d4af37;
-            --gold-dim: #8a7038;
-            --text-main: #e0e0e0;
-            --text-sub: #888;
+            --bg-dark: #0f0f0f;
+            --bg-card: #141414;
+            
+            /* Dourado Champagne (Mais suave) */
+            --gold: #c5a065; 
+            --gold-dim: #8c734b;
+            
+            --text-main: #eaeaea;
+            --text-sub: #a0a0a0;
+            
             --font-display: 'Cinzel', serif;
             --font-body: 'Manrope', sans-serif;
             --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+
+            /* Paleta Trisul Suavizada */
+            --bg-vinhoTrisul1: #3d222d;
+            --bg-vinhoTrisul2: #261019; 
+            --bg-begeTrisul: #dee0d2;
+            
+            /* Cores dos Pins do Mapa */
+            --pin-nature: #5fa875; 
+            --pin-health: #e0e0e0; 
+            --pin-culture: #c5a065; 
+            --pin-transport: #9eaeb0; 
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
+        html { scroll-behavior: smooth; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -35,710 +50,611 @@
             font-family: var(--font-body);
             overflow-x: hidden;
             cursor: none;
-            /* Inicia travado para o preloader */
             overflow: hidden; 
         }
+        
+        body.popup-open { overflow: hidden; }
 
-        /* --- PRELOADER (NOVO) --- */
+        /* --- PRELOADER --- */
         #preloader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100vh;
-            background: var(--bg-dark);
-            z-index: 99999; /* Acima de tudo */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--bg-vinhoTrisul2); z-index: 99999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
             transition: opacity 0.8s ease, visibility 0.8s ease;
         }
-
-        #preloader.finished {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .loader-content {
-            text-align: center;
-            overflow: hidden;
-        }
-
+        #preloader.finished { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-content { text-align: center; overflow: hidden; }
         .loader-logo {
-            font-family: var(--font-display);
-            font-size: 3rem;
-            letter-spacing: 4px;
-            color: #fff;
-            display: block;
-            margin-bottom: 1rem;
-            animation: slideUp 0.8s var(--ease-expo) forwards;
+            font-family: var(--font-display); font-size: 3rem; letter-spacing: 4px; color: #fff;
+            display: block; margin-bottom: 1rem; animation: slideUp 0.8s var(--ease-expo) forwards;
         }
-
         .loader-percent {
-            font-family: var(--font-body);
-            font-size: 0.9rem;
-            color: var(--gold);
-            letter-spacing: 2px;
-            display: block;
-            margin-top: 1rem;
+            font-family: var(--font-body); font-size: 0.9rem; color: var(--gold);
+            letter-spacing: 2px; display: block; margin-top: 1rem;
         }
-
-        .loader-line-mask {
-            width: 200px;
-            height: 1px;
-            background: #222;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .loader-line {
-            position: absolute;
-            top: 0; left: 0; height: 100%; width: 0%;
-            background: var(--gold);
-            transition: width 0.1s linear;
-        }
+        .loader-line-mask { width: 200px; height: 1px; background: #333; margin: 0 auto; position: relative; overflow: hidden; }
+        .loader-line { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: var(--gold); transition: width 0.1s linear; }
 
         /* --- CUSTOM CURSOR --- */
         .cursor-dot, .cursor-circle {
-            position: fixed;
-            top: 0; left: 0;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            z-index: 9999;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%); border-radius: 50%; z-index: 9999; pointer-events: none;
         }
-        .cursor-dot {
-            width: 8px; height: 8px;
-            background: var(--gold);
-        }
+        .cursor-dot { width: 8px; height: 8px; background: var(--gold); }
         .cursor-circle {
-            width: 40px; height: 40px;
-            border: 1px solid rgba(212, 175, 55, 0.5);
+            width: 40px; height: 40px; border: 1px solid rgba(197, 160, 101, 0.4);
             transition: width 0.3s, height 0.3s, background 0.3s;
         }
-        
         body.hovering .cursor-circle {
-            width: 80px; height: 80px;
-            background: rgba(212, 175, 55, 0.1);
-            border-color: var(--gold);
-            backdrop-filter: blur(2px);
+            width: 80px; height: 80px; background: rgba(197, 160, 101, 0.1); border-color: var(--gold); backdrop-filter: blur(2px);
         }
 
         /* --- TYPOGRAPHY --- */
         h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 400; line-height: 1.1; }
         p { font-weight: 300; line-height: 1.8; color: var(--text-sub); }
-        
         .gold-text { color: var(--gold); }
         .subtitle {
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            font-size: 0.7rem;
-            color: var(--gold);
-            margin-bottom: 1.5rem;
-            display: block;
+            text-transform: uppercase; letter-spacing: 4px; font-size: 0.7rem; color: var(--gold);
+            margin-bottom: 1.5rem; display: block;
         }
 
-        /* --- HEADER & MENU --- */
+        /* --- HEADER --- */
         header {
-            position: fixed;
-            top: 0; width: 100%;
-            padding: 2rem 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            mix-blend-mode: difference;
+            position: fixed; top: 0; width: 100%; padding: 2rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; mix-blend-mode: difference; transition: all 2s var(--ease-expo); 
         }
-        .logo { font-family: var(--font-display); font-weight: 700; letter-spacing: 2px; font-size: 1.2rem; text-decoration: none; color: #fff;}
-        .menu-btn { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; color: #fff; border: none; background: none;}
+
+        header.scrolled {
+            padding: 1.2rem 3rem;
+            background: linear-gradient(135deg, rgba(38, 16, 25, 0.95), rgba(61, 34, 45, 0.95));
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            mix-blend-mode: normal;
+            border-bottom: 1px solid rgba(197, 160, 101, 0.15);
+        }
+
+        .logo {
+            font-family: var(--font-display); font-weight: 700; letter-spacing: 2px;
+            font-size: 1.2rem; text-decoration: none; color: #fff;
+        }
+        .menu-btn {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; color: #fff; border: none; background: none;
+        }
 
         /* --- MENU OVERLAY --- */
         .menu-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100vh;
-            background: rgba(8, 8, 8, 0.98);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--bg-vinhoTrisul2); z-index: 999;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.6s var(--ease-expo), visibility 0.6s;
+            display: grid; grid-template-columns: 1fr 1fr;
         }
-
-        .menu-overlay.open {
-            opacity: 1;
-            visibility: visible;
+        .menu-overlay.open { opacity: 1; visibility: visible; }
+        
+        .menu-nav-container {
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+            padding-left: 10vw; position: relative; z-index: 2;
         }
-
-        .menu-nav {
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-            gap: 2rem;
-        }
-
+        .menu-nav { display: flex; flex-direction: column; gap: 1.5rem; }
         .menu-link {
-            font-family: var(--font-display);
-            font-size: clamp(2rem, 4vw, 4rem);
-            color: var(--text-sub);
-            text-decoration: none;
-            transition: color 0.3s;
+            font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 4rem);
+            color: rgba(255, 255, 255, 0.3); text-decoration: none; transition: color 0.4s;
+            cursor: pointer; position: relative;
         }
-
-        .menu-link:hover {
-            color: var(--gold);
+        .menu-link:hover, .menu-link.active { color: #fff; }
+        .menu-link::before {
+            content: ''; position: absolute; left: -20px; top: 50%; transform: translateY(-50%);
+            width: 8px; height: 8px; background: var(--gold); opacity: 0; transition: 0.3s;
         }
+        .menu-link:hover::before { opacity: 1; left: -30px; }
 
+        .menu-visuals {
+            position: relative; height: 100%; overflow: hidden;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .menu-bg-img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0; transition: opacity 1s ease, transform 1.5s ease;
+            transform: scale(1.1); filter: none;
+        }
+        .menu-overlay.open .menu-bg-img { opacity: 1; transform: scale(1); }
         .close-btn {
-            position: absolute;
-            top: 2rem; right: 3rem;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            color: #fff;
+            position: absolute; top: 2rem; right: 3rem; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer; color: #fff; z-index: 10;
         }
 
-        /* --- HERO SECTION --- */
+        /* --- HERO --- */
         .hero {
-            height: 100vh;
-            width: 100%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            height: 100vh; width: 100%; position: relative;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
-        
         .hero-video-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            opacity: 0.4;
-            transform: scale(1.1);
-            animation: breathe 10s infinite alternate ease-in-out;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.4; transform: scale(1.1); animation: breathe 10s infinite alternate ease-in-out;
         }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            mix-blend-mode:color-dodge;
-        }
-
+        .hero-content { position: relative; z-index: 2; text-align: center; mix-blend-mode: color-dodge; }
         .hero h1 {
-            font-size: clamp(3rem, 8vw, 8rem);
-            letter-spacing: -2px;
-            opacity: 0;
-            transform: translateY(50px);
-            animation: slideUp 1.2s var(--ease-expo) forwards 0.5s;
+            font-size: clamp(3rem, 8vw, 8rem); letter-spacing: -2px; opacity: 0;
+            transform: translateY(50px); animation: slideUp 1.2s var(--ease-expo) forwards 0.5s;
         }
-
         .hero p {
-            font-size: 1.2rem;
-            max-width: 400px;
-            margin: 2rem auto;
-            color: #fff;
-            opacity: 0;
-            animation: fadeIn 1.5s ease forwards 1s;
+            font-size: 1.2rem; max-width: 400px; margin: 2rem auto; color: #fff;
+            opacity: 0; animation: fadeIn 1.5s ease forwards 1s;
         }
 
-        /* --- SECTION 1: ASSIMETRIA --- */
-        .asym-section {
-            padding: 10rem 10%;
-            position: relative;
-        }
-
-        .asym-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .img-reveal-wrapper {
-            position: relative;
-            overflow: hidden;
-            height: 70vh;
-        }
-
-        .img-reveal-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scale(1.2);
-            transition: transform 1.5s var(--ease-expo);
-        }
-
-        .img-reveal-wrapper::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-dark);
-            transform: scaleY(1);
-            transform-origin: bottom;
-            transition: transform 1s var(--ease-expo);
-        }
-
-        .asym-section.active .img-reveal-wrapper::after {
-            transform: scaleY(0);
-        }
-        
-        .asym-section.active .img-reveal-wrapper img {
-            transform: scale(1);
-        }
-
-        .floating-content {
-            background: rgba(15, 15, 15, 0.9);
-            padding: 4rem;
-            margin-left: -100px;
-            z-index: 2;
-            border-left: 1px solid var(--gold-dim);
-            backdrop-filter: blur(10px);
-            position: relative;
-            margin-top: 100px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s ease 0.5s;
-        }
-
-        .asym-section.active .floating-content {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- SECTION 2: MARQUEE --- */
+        /* --- MARQUEE --- */
         .marquee-section {
-            padding: 4rem 0;
-            background: var(--bg-dark);
-            overflow: hidden;
-            white-space: nowrap;
-            border-top: 1px solid #222;
-            border-bottom: 1px solid #222;
+            padding: 4rem 0; overflow: hidden; white-space: nowrap;
+            border-top: 1px solid #222; border-bottom: 1px solid #222;
         }
-
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 30s linear infinite;
-        }
-
+        .marquee-content { display: inline-block; animation: marquee 30s linear infinite; }
         .marquee-text {
-            font-family: var(--font-display);
-            font-size: 8rem;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,0.2);
-            margin-right: 4rem;
-            text-transform: uppercase;           
+            font-family: var(--font-display); font-size: 8rem; color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15); margin-right: 4rem; text-transform: uppercase;
         }
 
-        /* --- SECTION 3: HORIZONTAL SCROLL --- */
-        .horizontal-scroll-container {
-            height: 400vh;
-            position: relative;
+        /* --- ASYMMETRY --- */
+        .asym-section { padding: 10rem 10%; position: relative; }
+        .asym-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center; }
+        .img-reveal-wrapper { position: relative; overflow: hidden; height: 70vh; }
+        .img-reveal-wrapper img {
+            width: 100%; height: 100%; object-fit: cover; transform: scale(1.2); transition: transform 1.5s var(--ease-expo);
         }
+        .img-reveal-wrapper::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); transform: scaleY(1); transform-origin: bottom; transition: transform 1s var(--ease-expo);
+        }
+        .asym-section.active .img-reveal-wrapper::after { transform: scaleY(0); }
+        .asym-section.active .img-reveal-wrapper img { transform: scale(1); }
+        .floating-content {
+            background: rgba(20, 20, 20, 0.95); padding: 4rem; margin-left: -100px; z-index: 2;
+            border-left: 1px solid var(--gold-dim); backdrop-filter: blur(10px); position: relative;
+            margin-top: 100px; opacity: 0; transform: translateY(30px); transition: all 1s ease 0.5s;
+        }
+        .asym-section.active .floating-content { opacity: 1; transform: translateY(0); }
 
+        /* --- SCROLL RESORT (GALERIA) --- */
+        .horizontal-scroll-container { height: 600vh; position: relative; }
         .sticky-wrapper {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            background: #0c0c0c;
+            position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; background: #0c0c0c;
         }
-
-        .horizontal-track {
-            display: flex;
-            gap: 5vw;
-            padding-left: 10vw;
-            will-change: transform; 
-        }
-
+        .horizontal-track { display: flex; gap: 5vw; padding-left: 10vw; will-change: transform; }
         .gallery-card {
-            width: 40vw;
-            height: 60vh;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-            border-right: 1px solid var(--gold-dim);
-            transition: transform 0.3s ease;
+            width: 40vw; height: 60vh; flex-shrink: 0; position: relative; overflow: hidden;
+            border-right: 1px solid var(--gold-dim); transition: transform 0.3s ease;
         }
-
+        .gallery-card::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent); z-index: 1; pointer-events: none; transition: opacity 0.3s ease;
+        }
         .gallery-card img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            opacity: 0.6;
-            filter: grayscale(100%);
+            width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: grayscale(100%);
             transition: opacity 0.8s ease, filter 0.8s ease, transform 0.8s ease;
         }
-
-        .gallery-card.active img {
-            opacity: 1;
-            filter: grayscale(0%);
-            transform: scale(1.05);
+        .gallery-card.auto-lit img { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
+        .card-info { position: absolute; bottom: 3rem; left: 2.5rem; z-index: 2; pointer-events: none; }
+        .card-info h3 {
+            color: #fff; font-size: 2rem; text-shadow: 0 4px 20px rgba(0,0,0,0.5); margin-bottom: 0.5rem;
         }
-        
-        .gallery-card:hover img {
-            opacity: 1;
-            filter: grayscale(0%);
-            transform: scale(1.05);
-        }
-
-        .card-info {
-            position: absolute;
-            bottom: 2rem; left: 2rem;
-            z-index: 2;
-            pointer-events: none;
+        .card-info p {
+            color: #e0e0e0; font-size: 1.1rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.5); opacity: 0.9;
         }
         .card-num {
-            font-size: 4rem;
-            font-family: var(--font-display);
-            color: rgba(255,255,255,0.1);
-            position: absolute;
-            top: -3rem; left: 0;
-            line-height: 1;
+            font-size: 4rem; font-family: var(--font-display); color: rgba(255, 255, 255, 0.1);
+            position: absolute; top: -3rem; left: 0; line-height: 1;
         }
 
-        /* --- SECTION PLANTAS --- */
-        .plans-section {
-            padding: 10rem 10%;
-            background: #0b0b0b;
-        }
-
-        .plans-header {
-            margin-bottom: 4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        .plans-tabs {
-            display: flex;
-            gap: 2rem;
-        }
-
+        /* --- PLANTAS --- */
+        .plans-section { padding: 10rem 10%; background-color: var(--bg-card); }
+        .plans-header { margin-bottom: 4rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 2rem; }
+        .plans-tabs { display: flex; gap: 2rem; }
         .plan-tab {
-            background: transparent;
-            border: none;
-            color: var(--text-sub);
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding-bottom: 0.5rem;
-            position: relative;
-            transition: 0.3s;
+            background-color: transparent; border: none; color: var(--text-sub); font-family: var(--font-display);
+            font-size: 1.5rem; cursor: pointer; padding-bottom: 0.5rem; position: relative; transition: 0.3s;
         }
-
-        .plan-tab.active {
-            color: var(--gold);
-        }
-
-        .plan-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 2px;
-            background: var(--gold);
-        }
-
+        .plan-tab.active { color: var(--gold); }
+        .plan-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--gold); }
         .plan-display-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-            display: none;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; opacity: 0;
+            transform: translateY(20px); transition: all 0.5s ease; display: none;
         }
-        
-        .plan-display-area.active {
-            display: grid;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .plan-image-box {
-            background: #151515;
-            padding: 2rem;
-            border: 1px solid #222;
-        }
-
-        .plan-image-box img {
-            width: 100%;
-            height: auto;
-            filter: invert(1) grayscale(1); 
-            opacity: 0.8;
-        }
-
-        .plan-details ul {
-            list-style: none;
-            margin-top: 2rem;
-        }
-
+        .plan-display-area.active { display: grid; opacity: 1; transform: translateY(0); }
+        .plan-image-box { background: #151515; padding: 2rem; border: 1px solid #222; }
+        .plan-image-box img { width: 100%; height: auto; filter: invert(1) grayscale(1); opacity: 0.8; }
+        .plan-details ul { list-style: none; margin-top: 2rem; }
         .plan-details li {
-            padding: 1rem 0;
-            border-bottom: 1px solid #222;
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-main);
+            padding: 1rem 0; border-bottom: 1px solid #222; display: flex; justify-content: space-between; color: var(--text-main);
         }
 
-        /* --- SECTION TEAM --- */
-        .team-section {
-            padding: 10rem 10%;
-            border-top: 1px solid #222;
-        }
+        /* --- TEAM --- */
+        .team-section { padding: 10rem 10%; border-top: 1px solid #222; }
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; margin-top: 4rem; }
+        .team-card { position: relative; }
+        .team-img-frame { height: 400px; overflow: hidden; margin-bottom: 1.5rem; filter: grayscale(100%); transition: 0.5s; }
+        .team-card:hover .team-img-frame { filter: grayscale(0%); }
+        .team-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .team-card:hover .team-img-frame img { transform: scale(1.05); }
+        .team-role { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; display: block; }
+        .team-name { font-size: 1.5rem; font-family: var(--font-display); color: #fff; }
 
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 4rem;
-            margin-top: 4rem;
-        }
+        /* --- STATS --- */
+        .stats-section { padding: 10rem 10%; display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; border-top: 1px solid #222; }
+        .stat-item h3 { font-size: 4rem; color: var(--gold); margin-bottom: 0.5rem; }
 
-        .team-card {
-            position: relative;
-        }
-
-        .team-img-frame {
-            height: 400px;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-            filter: grayscale(100%);
-            transition: 0.5s;
-        }
-        
-        .team-card:hover .team-img-frame {
-            filter: grayscale(0%);
-        }
-
-        .team-img-frame img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: 0.5s;
-        }
-
-        .team-card:hover .team-img-frame img {
-            transform: scale(1.05);
-        }
-
-        .team-role {
-            font-size: 0.8rem;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-
-        .team-name {
-            font-size: 1.5rem;
-            font-family: var(--font-display);
-            color: #fff;
-        }
-
-        /* --- SECTION STATS --- */
-        .stats-section {
-            padding: 10rem 10%;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            text-align: center;
-            border-top: 1px solid #222;
-        }
-
-        .stat-item h3 {
-            font-size: 4rem;
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        /* --- SECTION LOCATION (MAPA REGIAO) --- */
-        .region-section {
-            position: relative;
-            height: 100vh;
-            width: 100%;
-            overflow: hidden;
-            background: #000;
-        }
-
+        /* --- LOCATION --- */
+        .region-section { position: relative; height: 100vh; width: 100%; overflow: hidden; background: #050505; }
+        #map-container { width: 100%; height: 100%; opacity: 0; pointer-events: none; transition: opacity 1s ease; position: absolute; top: 0; left: 0; z-index: 1; }
+        #map-container.active { opacity: 1; pointer-events: all; }
         .region-img-wrapper {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            transform: scale(1.15); 
-            opacity: 0.5;
-            transition: transform 1.5s var(--ease-expo), opacity 1.5s ease;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: scale(1.15); opacity: 0.5;
+            transition: transform 1.5s var(--ease-expo), opacity 1s ease; z-index: 2; pointer-events: none;
         }
-
-        .region-section.active .region-img-wrapper {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .region-img-wrapper img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
-
-        /* Gradiente */
-        .region-section::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 40%;
-            background: linear-gradient(to top, var(--bg-dark), transparent);
-            pointer-events: none;
-        }
-
-        /* OVERLAY POSICIONADO À DIREITA EMBAIXO */
+        .region-img-wrapper img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
+        .region-section.active .region-img-wrapper { transform: scale(1); opacity: 1; }
+        .region-section.map-active .region-img-wrapper { opacity: 0; }
         .region-overlay {
-            position: absolute;
-            bottom: 5rem;
-            right: 5rem;
-            z-index: 2;
-            text-align: left;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s ease 0.3s;
-            mix-blend-mode: normal;
-            background: rgba(8, 8, 8, 0.6);
-            padding: 3rem;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 450px;
+            position: absolute; bottom: 5rem; right: 5rem; z-index: 10; text-align: left; opacity: 0; transform: translateY(30px);
+            transition: all 1s ease 0.3s; mix-blend-mode: normal; background: rgba(15, 15, 15, 0.85); padding: 3rem;
+            backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); max-width: 450px;
         }
+        .region-section.active .region-overlay { opacity: 1; transform: translateY(0); }
+        .region-section.map-active .region-overlay { transform: translateY(100px); opacity: 0; pointer-events: none; }
+        .region-overlay h2 { font-size: 2.5rem; color: #fff; margin: 1rem 0; }
 
-        .region-section.active .region-overlay {
-            opacity: 1;
-            transform: translateY(0);
+        /* Pins */
+        .custom-pin {
+            background-color: var(--gold); border-radius: 50%; border: 2px solid #fff;
+            box-shadow: 0 0 20px rgba(197, 160, 101, 0.6); width: 20px; height: 20px;
         }
-
-        .region-overlay h2 {
-            font-size: 2.5rem;
-            color: #fff;
-            margin: 1rem 0;
+        .pin-pulse {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px;
+            border-radius: 50%; border: 1px solid var(--gold); animation: pulsePin 2s infinite; opacity: 0;
         }
+        .poi-pin-container {
+            display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer; transition: transform 0.3s;
+        }
+        .poi-pin-container:hover { transform: scale(1.2); z-index: 100; }
+        .poi-dot {
+            width: 10px; height: 10px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.3);
+        }
+        .type-nature .poi-dot { background-color: var(--pin-nature); box-shadow: 0 0 10px var(--pin-nature); }
+        .type-health .poi-dot { background-color: var(--pin-health); box-shadow: 0 0 10px var(--pin-health); }
+        .type-culture .poi-dot { background-color: var(--pin-culture); box-shadow: 0 0 10px var(--pin-culture); }
+        .type-transport .poi-dot { background-color: var(--pin-transport); box-shadow: 0 0 10px var(--pin-transport); }
+        .poi-label {
+            font-family: var(--font-body); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #fff;
+            background: rgba(0, 0, 0, 0.8); padding: 4px 8px; border-radius: 4px; white-space: nowrap;
+            opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+        }
+        .poi-pin-container.major-poi .poi-label { opacity: 1; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); }
+        .poi-pin-container:hover .poi-label { opacity: 1; }
 
-        /* --- FINAL CTA SECTION --- */
+        /* --- CTA SECTION --- */
         .cta-final-section {
-            padding: 8rem 10%;
-            text-align: center;
-            background: #080808;
-            border-top: 1px solid #222;
-            position: relative;
-            z-index: 5;
+            padding: 8rem 10% 4rem 10%; text-align: center; background: linear-gradient(to bottom, #090909, var(--bg-vinhoTrisul2));
+            border-top: 1px solid #222; position: relative; z-index: 5;
         }
-
         .cta-btn-large {
-            display: inline-block;
-            margin-top: 3rem;
-            padding: 1.5rem 4rem;
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            transition: 0.4s var(--ease-expo);
+            display: inline-block; margin-top: 3rem; padding: 1.5rem 4rem; background: transparent;
+            border: 1px solid var(--gold); color: var(--gold); font-family: var(--font-display); font-size: 1.2rem;
+            text-decoration: none; text-transform: uppercase; letter-spacing: 3px; transition: 0.4s var(--ease-expo); cursor: pointer;
         }
+        .cta-btn-large:hover { background: var(--gold); color: #000; padding: 1.5rem 5rem; }
+/* --- TRUST BANNER (CENTRALIZADO) --- */
+.trust-banner {
+    display: flex;
+    justify-content: center; /* Centraliza os itens horizontalmente */
+    align-items: center;     /* Centraliza os itens verticalmente (um em relação ao outro) */
+    gap: 6rem;               /* Espaço entre os dois logos */
+    flex-wrap: wrap;         /* Permite quebrar linha no celular */
+    
+    background-color: var(--bg-vinhoTrisul2);
+    padding: 4rem 10%;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-        .cta-btn-large:hover {
-            background: var(--gold);
-            color: #000;
-            padding: 1.5rem 5rem;
-        }
+.trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza o texto "Realização" com o Logo */
+    justify-content: center;
+    opacity: 0.9;
+    transition: 0.3s;
+}
+
+.trust-item:hover {
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
+/* Ajuste para celular */
+@media (max-width: 768px) {
+    .trust-banner {
+        gap: 3rem;
+        flex-direction: column; /* Um embaixo do outro no celular */
+    }
+}
+.trust-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-sub);
+    margin-bottom: 1.5rem;
+    display: block;
+    font-family: var(--font-body);
+}
+
+/* --- LOGO TRISUL (CSS + SVG) --- */
+.trisul-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.trisul-icon {
+    width: 45px;
+    height: 45px;
+}
+
+.trisul-text {
+    font-family: 'Inter', sans-serif; /* Fonte geométrica para o logo */
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: #fff; /* Branco para o modo noturno */
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+/* --- LOGO BM REALTY (CSS PURO) --- */
+.bm-logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bm-box {
+    background-color: #2b334d; /* Azul Escuro da BM */
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    display: flex;
+    align-items: flex-end; /* Texto bm fica embaixo */
+    justify-content: flex-start;
+    padding: 10px 12px;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.bm-text {
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 0.8;
+    letter-spacing: -2px;
+}
+
+.bm-dot {
+    color: #00bfa5; /* Verde do ponto */
+    font-size: 3rem;
+    line-height: 0.8;
+}
+
+.bm-realty {
+    margin-top: 8px;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Ajuste Mobile */
+@media (max-width: 768px) {
+    .trust-banner {
+        gap: 4rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    .trust-item { margin-bottom: 2rem; }
+}
 
         /* --- FOOTER --- */
-        footer {
-            padding: 5rem 10%;
-            text-align: center;
-            border-top: 1px solid #222;
-            color: #444; 
-        }
-        
-        /* --- UTILITÁRIOS --- */
+        footer { padding: 5rem 10%; text-align: center; border-top: 1px solid #222; color: #666; background-color: #1a0b12; }
         .btn-line {
-            display: inline-block;
-            margin-top: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-            color: #fff;
-            text-decoration: none;
-            position: relative;
-            padding-bottom: 5px;
+            display: inline-block; margin-top: 2rem; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem;
+            color: #fff; text-decoration: none; position: relative; padding-bottom: 5px; cursor: pointer;
         }
         .btn-line::after {
-            content: '';
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: var(--gold);
+            transform: scaleX(0); transform-origin: right; transition: transform 0.4s var(--ease-expo);
+        }
+        .btn-line:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        /* --- POPUP DE CONTATO (ESTILO REFINADO) --- */
+        .popup-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.2); 
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 10000; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+        }
+        .popup-overlay.active { display: flex; }
+        .popup-content { 
+            background: linear-gradient(145deg, #1f1f1f, #141414); 
+            border: 1px solid var(--gold-dim); 
+            padding: 3rem; border-radius: 8px; max-width: 50rem; width: 100%; 
+            position: relative; transform: scale(0.95); opacity: 0; 
+            transition: all 0.5s var(--ease-expo); color: #fff; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+        }
+        .popup-overlay.active .popup-content { transform: scale(1); opacity: 1; }
+        
+        .popup-close { position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-sub); transition: 0.3s; }
+        .popup-close:hover { color: var(--gold); transform: rotate(90deg); }
+        
+        .broker-container { display: flex; gap: 3rem; align-items: flex-start; }
+        .broker-info { flex: 0.8; text-align: center; padding-right: 2rem; border-right: 1px solid rgba(255,255,255,0.05); }
+        .broker-actions { flex: 1.2; display: flex; flex-direction: column; justify-content: center; position: relative; min-height: 200px; }
+        
+        .broker-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1.5rem; border: 2px solid var(--gold); display: block; filter: grayscale(10%); transition: 0.3s; }
+        .broker-photo:hover { filter: grayscale(0%); transform: scale(1.02); }
+        
+        .broker-name { font-family: var(--font-display); font-size: 1.8rem; color: #fff; margin-bottom: 0.2rem; }
+        .broker-creci { color: var(--text-sub); font-size: 0.8rem; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .contact-details { margin-bottom: 1.5rem; text-align: left; }
+        .contact-item { font-size: 0.95rem; color: var(--text-sub); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+        .contact-item strong { color: var(--gold); font-weight: 500; font-family: var(--font-body); }
+        .contact-item a { color: #fff; text-decoration: none; transition: 0.3s; border-bottom: 1px solid transparent; }
+        .contact-item a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+        .contact-btn { width: 100%; padding: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; background: transparent; cursor: pointer; margin-bottom: 1rem; border-radius: 2px; }
+        .contact-btn:hover { background: var(--gold); border-color: var(--gold); color: #000; }
+        
+        /* Botão WhatsApp mais suave */
+        .whatsapp-btn { background: rgba(37, 211, 102, 0.1); border-color: #25d366; color: #25d366; z-index: 10; position: relative;}
+        .whatsapp-btn:hover { background: #25d366; color: #fff; border-color: #25d366; }
+        
+        .social-icons { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }
+        .social-link { color: var(--text-sub); transition: 0.3s; }
+        .social-link:hover { color: var(--gold); transform: translateY(-2px); }
+
+        /* Dynamic Container for QR Swap */
+        .dynamic-actions-wrapper {
+            position: relative;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .default-actions, .qr-actions {
+            width: 100%;
+            transition: all 0.4s ease;
+        }
+
+        /* Default State */
+        .default-actions {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+            position: relative;
+        }
+
+        .qr-actions {
             position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 1px;
-            background: var(--gold);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.4s var(--ease-expo);
-        }
-        .btn-line:hover::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-
-        /* Animações Keyframes */
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        @keyframes breathe {
-            from { transform: scale(1.1); }
-            to { transform: scale(1.15); }
-        }
-        @keyframes slideUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; }
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* --- MEDIA QUERIES --- */
+        /* Active QR State */
+        .active-qr .default-actions {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .active-qr .qr-actions {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+            position: relative;
+        }
+
+        .whatsapp-qr-text { font-size: 0.85rem; color: #aaa; line-height: 1.4; text-align: center; margin-bottom: 1rem; }
+        .whatsapp-qr-text strong { display: block; margin-bottom: 0.3rem; color: #fff; }
+        .qr-img { width: 120px; height: 120px; margin-bottom: 1rem; border: 4px solid #fff; border-radius: 4px; }
+
+        /* Botão dentro do QR Container */
+        .whatsapp-web-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #25d366;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            width: 100%;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .whatsapp-web-link:hover { background: #1da851; }
+
+        /* Responsive Popup */
+        @media (max-width: 768px) {
+            .broker-container { flex-direction: column; gap: 2rem; }
+            .broker-info { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 2rem; width: 100%; }
+            .popup-content { padding: 2rem 1.5rem; max-height: 90vh; overflow-y: auto; }
+            .contact-details { text-align: center; }
+            .contact-item { justify-content: center; }
+            
+            /* Correção de Alinhamento Mobile */
+            .broker-actions { width: 100%; align-items: center; }
+            .dynamic-actions-wrapper { width: 100%; }
+            .default-actions, .qr-actions { align-items: center; width: 100%; }
+        }
+
+        /* Animações */
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes breathe { from { transform: scale(1.1); } to { transform: scale(1.15); } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulsePin { 0% { width: 0; height: 0; opacity: 1; } 100% { width: 80px; height: 80px; opacity: 0; } }
+
+        /* MEDIA QUERIES */
         @media (max-width: 768px) {
             header { padding: 1.5rem; }
+            .menu-overlay { grid-template-columns: 1fr; }
+            .menu-visuals { display: none; }
+            .menu-nav-container { padding-left: 0; align-items: center; }
             .asym-grid { grid-template-columns: 1fr; gap: 0; }
             .floating-content { margin: -50px 20px 0 20px; padding: 2rem; }
-            
             .horizontal-scroll-container { height: auto; }
             .sticky-wrapper { position: relative; height: auto; display: block; }
             .horizontal-track { flex-direction: column; padding: 2rem; gap: 4rem; transform: none !important; }
-            
             .gallery-card { width: 100%; height: 50vh; border: 1px solid #333; margin-bottom: 2rem; }
-            
-            .stats-section { grid-template-columns: 1fr; gap: 3rem; }
+            .stats-section, .trust-banner {
+                gap: 3rem;
+                flex-direction: column; /* Um embaixo do outro no celular */
+            }
             .marquee-text { font-size: 4rem; }
             .cursor-dot, .cursor-circle { display: none; }
-            .plans-header { flex-direction: column; align-items: flex-start; }
-            .plan-display-area { grid-template-columns: 1fr; }
-            
-            .region-overlay { 
-                bottom: 2rem; 
-                left: 1rem; 
-                right: 1rem; 
-                width: auto; 
-                max-width: none;
-                text-align: center;
-                padding: 2rem;
-            }
-            .region-overlay h2 { font-size: 2rem; }
-            
+            .region-overlay { bottom: 2rem; left: 1rem; right: 1rem; width: auto; max-width: none; text-align: center; padding: 2rem; }
             .cta-final-section { padding: 5rem 5%; }
         }
     </style>
 </head>
+
 <body>
 
     <div id="preloader">
         <div class="loader-content">
             <span class="loader-logo">QUARTEN.</span>
-            <div class="loader-line-mask"><div class="loader-line" id="loaderLine"></div></div>
+            <div class="loader-line-mask">
+                <div class="loader-line" id="loaderLine"></div>
+            </div>
             <span class="loader-percent" id="loaderText">0%</span>
         </div>
     </div>
@@ -748,15 +664,19 @@
 
     <div class="menu-overlay" id="menuOverlay">
         <div class="close-btn hover-target" id="closeMenu">Fechar</div>
-        <nav class="menu-nav">
-            <a href="#home" class="menu-link hover-target">Home</a>
-            <a href="#conceito" class="menu-link hover-target">Conceito</a>
-            <a href="#amenities" class="menu-link hover-target">Amenities</a>
-            <a href="#plantas" class="menu-link hover-target">Plantas</a>
-            <a href="#time" class="menu-link hover-target">Time</a>
-            <a href="#localizacao" class="menu-link hover-target">Localização</a>
-            <a href="#contato" class="menu-link hover-target">Contato</a>
-        </nav>
+        <div class="menu-nav-container">
+            <nav class="menu-nav">
+                <a href="#home" class="menu-link hover-target">The Rare</a>
+                <a href="#conceito" class="menu-link hover-target">O Legado</a>
+                <a href="#resort" class="menu-link hover-target">Private Resort</a>
+                <a href="#plantas" class="menu-link hover-target">Residências</a>
+                <a href="#localizacao" class="menu-link hover-target">O Endereço</a>
+                <a onclick="openPopup(event)" class="menu-link hover-target cursor-pointer">Atendimento</a>
+            </nav>
+        </div>
+        <div class="menu-visuals">
+            <img src="media/boulevart.webp" class="menu-bg-img" alt="Menu Background">
+        </div>
     </div>
 
     <header>
@@ -767,9 +687,9 @@
     <section class="hero" id="home">
         <img src="media/hero.jpg" class="hero-video-bg" alt="Background">
         <div class="hero-content">
-            <span class="subtitle">Breve Lançamento</span>
-            <h1>Natureza <br> <span style="font-style:italic; font-family:var(--font-body); font-weight:200; font-size: 0.7em;">&</span> Concreto</h1>
-            <p>Um quarteirão inteiro desenhado para redefinir o viver no Ibirapuera.</p>
+            <span class="subtitle">The Rare Collection</span>
+            <h1>Um Oásis Urbano <br> <span style="font-style:italic; font-family:var(--font-body); font-weight:200; font-size: 0.7em;"></span> 6.000m²</h1>
+            <p>Um quarteirão inteiro desenhado para redefinir o privilégio de viver no Ibirapuera.</p>
         </div>
     </section>
 
@@ -782,60 +702,87 @@
     <section class="asym-section scroll-trigger" id="conceito">
         <div class="asym-grid">
             <div class="img-reveal-wrapper">
-                <img src="media/fachadavertical.webp" alt="Arquitetura">
+                <img src="media/vistaaerea.webp" alt="Arquitetura" style="object-position: bottom left">
             </div>
             <div class="floating-content">
-                <span class="subtitle">O Conceito</span>
-                <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Onde a Cidade <br>Respira</h2>
-                <p>Na altura do número 1297 da Avenida Dr. Altino Arantes, nasce um novo capítulo. Aqui, o concreto encontra o orgânico, criando uma atmosfera onde o ritmo desacelera sem perder a fluidez.</p>
-                <a href="#plantas" class="btn-line hover-target">Conheça o Projeto</a>
+                <span class="subtitle">O Legado</span>
+                <h2 style="font-size: 2.5rem; margin-bottom: 1.5rem;">Privilégio <br>Absoluto</h2>
+                <p>Na altura do número 1297 da Avenida Dr. Altino Arantes, nasce um ícone. Aqui, o concreto dá lugar a uma ilha de tranquilidade, onde a arquitetura se curva à natureza.</p>
+                <a onclick="openPopup(event)" class="btn-line hover-target">Ver o Acervo</a>
             </div>
         </div>
     </section>
 
-    <section class="horizontal-scroll-container" id="amenities">
+   <section class="horizontal-scroll-container" id="resort">
         <div class="sticky-wrapper">
             <div class="horizontal-track" id="track">
                 
-                <div style="width: 30vw; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center;" class="intro-card-mobile">
-                    <span class="subtitle">Amenities</span>
-                    <h2 style="font-size: 3rem;">Um Resort <br>Particular</h2>
+                <div style="width: 30vw; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; padding-right: 2rem;">
+                    <span class="subtitle">Private Resort</span>
+                    <h2 style="font-size: 3rem;">Sua Ilha <br>Particular</h2>
                     <p>Deslize para explorar <span style="font-size: 1.5rem;">→</span></p>
                 </div>
 
                 <div class="gallery-card hover-target">
                     <span class="card-num">01</span>
-                    <img src="media/Tenis.webp" alt="Tênis">
+                    <img src="media/quadra.webp" alt="Quadra de Tênis">
                     <div class="card-info">
-                        <h3>Quadra Oficial</h3>
-                        <p>Saibro e Lounge Exclusivo</p>
+                        <h3>Quadra de Tênis</h3>
+                        <p>Saibro Oficial e Lounge</p>
                     </div>
                 </div>
 
                 <div class="gallery-card hover-target">
                     <span class="card-num">02</span>
-                    <img src="media/well.webp" alt="Piscina">
+                    <img src="media/lobby.webp" alt="Lobby">
                     <div class="card-info">
-                        <h3>Wellness Center</h3>
-                        <p>Raia de 25m e Cold Plunge</p>
+                        <h3>Grand Lobby</h3>
+                        <p>Recepção Monumental</p>
                     </div>
                 </div>
 
                 <div class="gallery-card hover-target">
                     <span class="card-num">03</span>
-                    <img src="media/wellness.webp" alt="Lobby">
+                    <img src="media/fitness.webp" alt="Academia">
                     <div class="card-info">
-                        <h3>Grand Lobby</h3>
-                        <p>Pé direito duplo monumental</p>
+                        <h3>Fitness Center</h3>
+                        <p>Alta Performance e Design</p>
                     </div>
                 </div>
 
                 <div class="gallery-card hover-target">
                     <span class="card-num">04</span>
-                    <img src="media/spa.webp" alt="Vista">
+                    <img src="media/wellness.webp" alt="Wellness">
                     <div class="card-info">
-                        <h3>Sky View</h3>
-                        <p>Apartamentos de 207m²</p>
+                        <h3>Wellness Spa</h3>
+                        <p>Santuário de Relaxamento</p>
+                    </div>
+                </div>
+
+                <div class="gallery-card hover-target">
+                    <span class="card-num">05</span>
+                    <img src="media/psicinaaerea.webp" alt="Piscina Externa">
+                    <div class="card-info">
+                        <h3>Piscina Outdoor</h3>
+                        <p>Oásis com Solarium</p>
+                    </div>
+                </div>
+
+                <div class="gallery-card hover-target">
+                    <span class="card-num">06</span>
+                    <img src="media/piscinacoberta.webp" alt="Piscina Coberta">
+                    <div class="card-info">
+                        <h3>Raia Coberta</h3>
+                        <p>25m Climatizada</p>
+                    </div>
+                </div>
+
+                <div class="gallery-card hover-target">
+                    <span class="card-num">07</span>
+                    <img src="media/brinquedoteca.webp" alt="Brinquedoteca">
+                    <div class="card-info">
+                        <h3>Kids Club</h3>
+                        <p>Universo Lúdico</p>
                     </div>
                 </div>
 
@@ -845,9 +792,8 @@
 
     <section class="plans-section" id="plantas">
         <div class="plans-header">
-            <div>
-                <span class="subtitle">Tipologias</span>
-                <h2>Residências <br>Suspensas</h2>
+            <div><span class="subtitle">Coleção</span>
+                <h2>Residências</h2>
             </div>
             <div class="plans-tabs hover-target">
                 <button class="plan-tab active" onclick="switchPlan('164')">164m²</button>
@@ -855,167 +801,218 @@
                 <button class="plan-tab" onclick="switchPlan('duplex')">Duplex</button>
             </div>
         </div>
-
         <div class="plan-display-area active" id="plan-164">
-            <div class="plan-image-box hover-target">
-                <img src="https://placehold.co/800x600/transparent/white?text=Planta+164m" alt="Planta 164m">
-            </div>
+            <div class="plan-image-box hover-target"><img src="https://placehold.co/800x600/transparent/white?text=Planta+164m" alt="Planta 164m"></div>
             <div class="plan-details">
-                <h3 style="font-size: 2rem; color: #fff;">3 ou 4 Dormitórios</h3>
-                <p>Plantas inteligentes com integração total entre living e terraço gourmet.</p>
+                <h3 style="font-size: 2rem; color: #fff;">Apartamento 164m²</h3>
+                <p>O equilíbrio perfeito entre sofisticação e funcionalidade, com integração total ao terraço.</p>
                 <ul>
                     <li><span>Área Privativa</span> <span class="gold-text">164m²</span></li>
                     <li><span>Suítes</span> <span>3 ou 4</span></li>
-                    <li><span>Vagas</span> <span>3 + Depósito</span></li>
-                    <li><span>Living</span> <span>Ampliado</span></li>
-                </ul>
-                <a href="#" class="btn-line hover-target">Baixar PDF</a>
+                </ul><a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
             </div>
         </div>
-
         <div class="plan-display-area" id="plan-207">
-            <div class="plan-image-box hover-target">
-                <img src="https://placehold.co/800x600/transparent/white?text=Planta+207m" alt="Planta 207m">
-            </div>
+            <div class="plan-image-box hover-target"><img src="https://placehold.co/800x600/transparent/white?text=Planta+207m" alt="Planta 207m"></div>
             <div class="plan-details">
-                <h3 style="font-size: 2rem; color: #fff;">High Living</h3>
-                <p>A máxima expressão de conforto com vista panorâmica para o skyline de São Paulo.</p>
+                <h3 style="font-size: 2rem; color: #fff;">Apartamento 207m²</h3>
+                <p>Espaços generosos que emolduram o skyline do Ibirapuera. A definição de morar bem.</p>
                 <ul>
                     <li><span>Área Privativa</span> <span class="gold-text">207m²</span></li>
                     <li><span>Suítes</span> <span>4</span></li>
-                    <li><span>Vagas</span> <span>4 + Depósito</span></li>
-                    <li><span>Master</span> <span>Closet Sr. e Sra.</span></li>
-                </ul>
-                <a href="#" class="btn-line hover-target">Baixar PDF</a>
+                </ul><a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
             </div>
         </div>
-
         <div class="plan-display-area" id="plan-duplex">
-            <div class="plan-image-box hover-target">
-                <img src="https://placehold.co/800x600/transparent/white?text=Planta+Penthouse" alt="Planta Duplex">
-            </div>
+            <div class="plan-image-box hover-target"><img src="https://placehold.co/800x600/transparent/white?text=Planta+Penthouse" alt="Planta Duplex"></div>
             <div class="plan-details">
-                <h3 style="font-size: 2rem; color: #fff;">Penthouse Duplex</h3>
+                <h3 style="font-size: 2rem; color: #fff;">Cobertura Duplex</h3>
                 <p>O topo do mundo. Uma mansão suspensa com pé direito duplo e piscina privativa.</p>
                 <ul>
                     <li><span>Área Privativa</span> <span class="gold-text">395m²</span></li>
-                    <li><span>Suítes</span> <span>4 Master</span></li>
-                    <li><span>Vagas</span> <span>5 Box</span></li>
                     <li><span>Lazer</span> <span>Piscina Privativa</span></li>
-                </ul>
-                <a href="#" class="btn-line hover-target">Baixar PDF</a>
+                </ul><a onclick="openPopup(event)" class="btn-line hover-target">Solicitar Book Digital</a>
             </div>
         </div>
     </section>
 
     <section class="team-section scroll-trigger" id="time">
-        <span class="subtitle">Quem Assina</span>
+        <span class="subtitle">Curadoria</span>
         <h2>Mentes <br>Brilhantes</h2>
-        
         <div class="team-grid">
             <div class="team-card hover-target">
-                <div class="team-img-frame">
-                    <img src="media/arquiteto.png" alt="Arquitetura">
-                </div>
-                <span class="team-role">Arquitetura</span>
+                <div class="team-img-frame"><img src="media/arquiteto.png" alt="Arquitetura"></div><span class="team-role">Arquitetura</span>
                 <h3 class="team-name">Königsberger Vannucchi</h3>
-                <p>Referência em arquitetura contemporânea, trazendo traços limpos e atemporais.</p>
             </div>
             <div class="team-card hover-target">
-                <div class="team-img-frame">
-                    <img src="media/paisagismo.jpg" alt="Paisagismo" style="object-position: top center">
-                </div>
-                <span class="team-role">Paisagismo</span>
+                <div class="team-img-frame"><img src="media/paisagismo.jpg" alt="Paisagismo" style="object-position: top center"></div><span class="team-role">Paisagismo</span>
                 <h3 class="team-name">Benedito Abbud</h3>
-                <p>Transformando concreto em floresta urbana com espécies nativas da Mata Atlântica.</p>
             </div>
             <div class="team-card hover-target">
-                <div class="team-img-frame">
-                    <img src="media/interiores2.png" alt="Design" style="object-position: top center">
-                </div>
-                <span class="team-role">Interiores</span>
+                <div class="team-img-frame"><img src="media/interiores2.png" alt="Design" style="object-position: top center"></div><span class="team-role">Interiores</span>
                 <h3 class="team-name">Chris Silveira</h3>
-                <p>Sofisticação e arte em cada detalhe das áreas comuns e decorados.</p>
             </div>
         </div>
     </section>
 
-    <section class="stats-section">
+   <section class="stats-section">
         <div class="stat-item hover-target">
-            <h3>158</h3>
-            <p>Hectares de Verde (Ibirapuera)</p>
+            <h3>6.000m²</h3>
+            <p>Terreno Exclusivo</p>
         </div>
         <div class="stat-item hover-target">
-            <h3>395m²</h3>
-            <p>Coberturas Duplex</p>
+            <h3>500m</h3>
+            <p>Do Parque Ibirapuera</p>
         </div>
         <div class="stat-item hover-target">
-            <h3>20+</h3>
-            <p>Espaços de Lazer</p>
+            <h3>164 a 395m²</h3>
+            <p>Residências Suspensas</p>
         </div>
     </section>
 
     <section class="region-section scroll-trigger" id="localizacao">
+        <div id="map-container"></div>
         <div class="region-img-wrapper">
             <img src="media/regiao.webp" alt="Mapa da Região">
         </div>
         <div class="region-overlay hover-target">
-            <span class="subtitle">O Endereço</span>
-            <h2>Conexão <br>Imediata</h2>
-            <p>No centro de tudo o que importa. <br>Ibirapuera aos seus pés.</p>
-            <a href="https://www.google.com/maps/search/?api=1&query=Av.+Dr.+Altino+Arantes,+1297" target="_blank" class="btn-line hover-target">Explore a Região</a>
+            <span class="subtitle">Localização Privilegiada</span>
+            <h2>O Endereço</h2>
+            <p>No epicentro do que realmente importa. <br>O Ibirapuera aos seus pés.</p>
+            <a onclick="activateMap()" class="btn-line hover-target">Explorar o Entorno</a>
         </div>
     </section>
 
     <section class="cta-final-section" id="contato">
-        <span class="subtitle">Atendimento Private</span>
-        <h2 style="font-size: 3rem; margin-bottom: 1rem;">Experience The Rare</h2>
-        <p>Agende uma apresentação exclusiva com nossos especialistas.</p>
-        <a href="#" class="cta-btn-large hover-target">Falar com Corretor</a>
+        <span class="subtitle">Atendimento Exclusivo</span>
+        <h2 style="font-size: 3rem; margin-bottom: 1rem;">Agende Sua Visita</h2>
+        <p>O luxo de viver aqui começa no atendimento. <br>Agende uma visita privada.</p>
+        <a onclick="openPopup(event)" class="cta-btn-large hover-target">Solicitar Apresentação</a>
     </section>
+
+    <section class="trust-banner">
+    
+    <div class="trust-item">
+        <span class="trust-label"></span>
+        <div class="trisul-logo-container">
+            <svg class="trisul-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 100V0H100V30H30V100H0Z" fill="#Eeb524"/> 
+                <path d="M38 100V38H100V62H62V100H38Z" fill="#Eeb524" fill-opacity="0.8"/>
+                <path d="M70 100V70H100V90H90V100H70Z" fill="#Eeb524" fill-opacity="0.6"/>
+            </svg>
+            <span class="trisul-text">TRISUL</span>
+        </div>
+    </div>
+
+    <div class="trust-item">
+        <span class="trust-label"></span>
+        <div class="bm-logo-wrapper">
+            <div class="bm-box">
+                <span class="bm-text">bm<span class="bm-dot">.</span></span>
+            </div>
+            <span class="bm-realty">REALTY</span>
+        </div>
+    </div>
+
+</section>
 
     <footer>
         <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: #666;">QUARTEN</h2>
         <p style="font-size: 0.9rem;">Av. Dr. Altino Arantes, 1297 - Vila Clementino, São Paulo - SP</p>
+        <p style="font-size: 0.7rem; color: #666; margin-top: 0.5rem;">CORRETOR MOTA - CRECI 315675</p>
         <br>
         <p style="font-size: 0.7rem; color: #444;">© 2024 Quarten Ibirapuera. Todos os direitos reservados.</p>
     </footer>
 
+    <div class="popup-overlay" id="broker-popup">
+        <div class="popup-content">
+            <button class="popup-close" id="close-popup-btn" onclick="closePopup()">×</button>
+            <div class="broker-container">
+                <div class="broker-info">
+                    <img src="https://placehold.co/150x150/111/c5a065?text=Mota" alt="Corretor Mota" class="broker-photo">
+                    <h3 class="broker-name">Mota</h3>
+                    <p class="broker-creci">Trisul Vendas <br> <span style="font-size: 0.7em; opacity: 0.8;">CRECI 315675</span></p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <strong>Telefone:</strong>
+                            <a href="tel:+5511953016045">+55 11 95301-6045</a>
+                        </div>
+                        <div class="contact-item">
+                            <strong>Email:</strong>
+                            <a href="mailto:motacorretor@trisulvendas.com.br">motacorretor@trisulvendas.com.br</a>
+                        </div>
+                    </div>
+
+                    <div class="social-icons">
+                        <a href="https://instagram.com/mota.trisul" target="_blank" class="social-link" title="Instagram">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="broker-actions">
+                    <button id="whatsapp-trigger" class="contact-btn whatsapp-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.886-.001 2.269.655 4.357 1.849 6.069l-1.2 4.368 4.459-1.164zm12.382-7.575c-.197-.426-.957-1.18-1.164-1.353-.208-.173-.418-.215-.626-.215-.213 0-.422.043-.633.26-.209.213-.831.831-.957 1.002-.124.172-.249.183-.456.043-.207-.133-1.134-.413-2.158-1.334-.799-.71-1.34-1.597-1.492-1.858-.152-.261-.01-."/></svg>
+                        Falar no WhatsApp
+                    </button>
+                    
+                    <div id="dynamic-actions" class="dynamic-actions-wrapper">
+                        
+                        <div class="default-actions">
+                            <a href="mailto:motacorretor@trisulvendas.com.br" class="contact-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                Enviar E-mail
+                            </a>
+                            
+                            <a href="tel:+5511953016045" class="contact-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                Ligar Agora
+                            </a>
+                        </div>
+
+                        <div class="qr-actions">
+                            <div class="whatsapp-qr-text">
+                                <strong>Escaneie para conversar</strong>
+                                <p>Aponte a câmera do seu celular.</p>
+                            </div>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/5511953016045" alt="QR Code WhatsApp" class="qr-img">
+                            <a href="https://wa.me/5511953016045?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20Quarten%20Ibirapuera." target="_blank" class="whatsapp-web-link">
+                                Abrir WhatsApp Web
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-        // --- 0. Preloader Logic (NOVO) ---
+        // --- 0. Preloader ---
         const preloader = document.getElementById('preloader');
         const loaderLine = document.getElementById('loaderLine');
         const loaderText = document.getElementById('loaderText');
-        
         let loadPercent = 0;
-        
-        // Simula o carregamento (pode ser substituído por window.onload real se preferir)
         const loadInterval = setInterval(() => {
             loadPercent += Math.floor(Math.random() * 5) + 1;
-            
             if (loadPercent >= 100) {
                 loadPercent = 100;
                 clearInterval(loadInterval);
-                
-                // Finaliza o carregamento
                 setTimeout(() => {
                     preloader.classList.add('finished');
-                    // Libera o scroll da página
-                    document.body.style.overflow = 'auto'; 
-                    document.body.style.overflowX = 'hidden'; 
-                }, 500); // Pequeno delay no 100%
+                    document.body.style.overflow = 'auto';
+                    document.body.style.overflowX = 'hidden';
+                }, 500);
             }
-            
             loaderLine.style.width = loadPercent + '%';
             loaderText.innerText = loadPercent + '%';
-            
-        }, 50); // Velocidade do carregamento
-
+        }, 30);
 
         // --- 1. Custom Cursor ---
         const cursorDot = document.querySelector('.cursor-dot');
         const cursorCircle = document.querySelector('.cursor-circle');
-        
         function updateHoverTargets() {
             const hoverTargets = document.querySelectorAll('.hover-target');
             hoverTargets.forEach(el => {
@@ -1023,16 +1020,10 @@
                 el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
             });
         }
-
         document.addEventListener('mousemove', (e) => {
-            const posX = e.clientX;
-            const posY = e.clientY;
-            cursorDot.style.left = `${posX}px`;
-            cursorDot.style.top = `${posY}px`;
-            cursorCircle.style.left = `${posX}px`;
-            cursorCircle.style.top = `${posY}px`;
+            cursorDot.style.left = `${e.clientX}px`; cursorDot.style.top = `${e.clientY}px`;
+            cursorCircle.style.left = `${e.clientX}px`; cursorCircle.style.top = `${e.clientY}px`;
         });
-        
         updateHoverTargets();
 
         // --- 2. Menu Interaction ---
@@ -1040,47 +1031,32 @@
         const closeBtn = document.getElementById('closeMenu');
         const menuOverlay = document.getElementById('menuOverlay');
         const menuLinks = document.querySelectorAll('.menu-link');
-
-        function toggleMenu() {
-            menuOverlay.classList.toggle('open');
-        }
-
+        function toggleMenu() { menuOverlay.classList.toggle('open'); }
         menuBtn.addEventListener('click', toggleMenu);
         closeBtn.addEventListener('click', toggleMenu);
-
-        menuLinks.forEach(link => {
-            link.addEventListener('click', toggleMenu);
-        });
+        menuLinks.forEach(link => { link.addEventListener('click', toggleMenu); });
 
         // --- 3. Reveal on Scroll ---
         const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
         }, { threshold: 0.2 });
-
         document.querySelectorAll('.scroll-trigger').forEach(el => revealObserver.observe(el));
 
-        // --- 4. Scroll Logic & Auto Color ---
+        // --- 4. Scroll Logic (AUTO LIGHT UP) ---
         const stickySection = document.querySelector('.horizontal-scroll-container');
         const track = document.querySelector('.horizontal-track');
         const cards = document.querySelectorAll('.gallery-card');
 
         window.addEventListener('scroll', () => {
             const isMobile = window.innerWidth <= 768;
-
             if (!isMobile) {
                 const offsetTop = stickySection.offsetTop;
                 const scrollY = window.scrollY;
                 const sectionHeight = stickySection.offsetHeight;
                 const windowHeight = window.innerHeight;
-                
                 let percentage = (scrollY - offsetTop) / (sectionHeight - windowHeight);
                 percentage = Math.max(0, Math.min(1, percentage));
-                
-                const moveX = percentage * -120; 
+                const moveX = percentage * -260;
                 track.style.transform = `translateX(${moveX}vw)`;
             } else {
                 track.style.transform = 'none';
@@ -1090,7 +1066,6 @@
                 const rect = card.getBoundingClientRect();
                 let distance;
                 let activationZone;
-
                 if (isMobile) {
                     const centerScreenY = window.innerHeight / 2;
                     const cardCenterY = rect.top + (rect.height / 2);
@@ -1100,14 +1075,9 @@
                     const centerScreenX = window.innerWidth / 2;
                     const cardCenterX = rect.left + (rect.width / 2);
                     distance = Math.abs(centerScreenX - cardCenterX);
-                    activationZone = window.innerWidth * 0.35;
+                    activationZone = window.innerWidth * 0.45;
                 }
-
-                if (distance < activationZone) {
-                    card.classList.add('active');
-                } else {
-                    card.classList.remove('active');
-                }
+                if (distance < activationZone) { card.classList.add('auto-lit'); } else { card.classList.remove('auto-lit'); }
             });
         });
 
@@ -1116,10 +1086,138 @@
             document.querySelectorAll('.plan-tab').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             document.querySelectorAll('.plan-display-area').forEach(area => area.classList.remove('active'));
-            setTimeout(() => {
-                document.getElementById('plan-' + planId).classList.add('active');
-            }, 100);
+            setTimeout(() => { document.getElementById('plan-' + planId).classList.add('active'); }, 100);
         }
+
+        // --- 6. MAPA LEAFLET (CURADO & LIMPO) ---
+        let mapInitialized = false;
+
+        function activateMap() {
+            const regionSection = document.querySelector('.region-section');
+            const mapContainer = document.getElementById('map-container');
+
+            regionSection.classList.add('map-active');
+            mapContainer.classList.add('active');
+
+            if (!mapInitialized) {
+                const centerLat = -23.595;
+                const centerLng = -46.645;
+
+                const map = L.map('map-container', {
+                    center: [centerLat, centerLng],
+                    zoom: 14,
+                    zoomControl: false,
+                    scrollWheelZoom: false
+                });
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &copy; CARTO',
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(map);
+
+                // --- PIN PRINCIPAL (QUARTEN) ---
+                const quartenIcon = L.divIcon({
+                    className: 'custom-pin-container',
+                    html: `<div class="pin-pulse"></div><div class="custom-pin"></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                L.marker([-23.6067, -46.6450], { icon: quartenIcon }).addTo(map).bindPopup("QUARTEN Ibirapuera");
+
+                // --- PONTOS DE INTERESSE CURADOS (Clean) ---
+                const pois = [
+                    { lat: -23.5874, lng: -46.6576, label: "Parque Ibirapuera", type: "nature", importance: "major" },
+                    { lat: -23.5966, lng: -46.6627, label: "Clube Monte Líbano", type: "nature", importance: "major" },
+                    { lat: -23.5866, lng: -46.6644, label: "Einstein Ibirapuera", type: "health", importance: "major" },
+                    { lat: -23.5857, lng: -46.6533, label: "Vista Restaurante", type: "culture", importance: "minor" },
+                    { lat: -23.6094, lng: -46.6667, label: "Shop. Ibirapuera", type: "transport", importance: "minor" },
+                    { lat: -23.5938, lng: -46.6366, label: "Liceu Pasteur", type: "culture", importance: "minor" },
+                    { lat: -23.6261, lng: -46.6564, label: "Aeroporto Congonhas", type: "transport", importance: "major" }
+                ];
+
+                // Loop para criar os pins
+                pois.forEach(poi => {
+                    const iconClass = `poi-pin-container type-${poi.type} ${poi.importance === 'major' ? 'major-poi' : ''}`;
+                    
+                    const customIcon = L.divIcon({
+                        className: 'poi-icon',
+                        html: `<div class="${iconClass}"><div class="poi-dot"></div><span class="poi-label">${poi.label}</span></div>`,
+                        iconSize: [100, 40],
+                        iconAnchor: [50, 40]
+                    });
+
+                    L.marker([poi.lat, poi.lng], { icon: customIcon }).addTo(map);
+                });
+                
+                L.control.zoom({ position: 'bottomleft' }).addTo(map);
+                mapInitialized = true;
+            }
+        }
+
+        // --- 7. Header Scroll Effect ---
+        const headerEl = document.querySelector('header');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) { 
+                headerEl.classList.add('scrolled');
+            } else {
+                headerEl.classList.remove('scrolled');
+            }
+        });
+
+        // --- 8. POPUP LOGIC (ATUALIZADO COM SWAP VIEW) ---
+        const popup = document.getElementById('broker-popup');
+        const dynamicWrapper = document.getElementById('dynamic-actions');
+        
+        function openPopup(e) {
+            if(e) e.preventDefault();
+            popup.classList.add('active');
+            document.body.classList.add('popup-open');
+        }
+
+        function closePopup() {
+            popup.classList.remove('active');
+            document.body.classList.remove('popup-open');
+            // Reseta a view para o padrão ao fechar
+            dynamicWrapper.classList.remove('active-qr');
+        }
+
+        // Lógica do Botão WhatsApp (View Swapper)
+        const whatsappBtn = document.getElementById('whatsapp-trigger');
+        
+        whatsappBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const isMobile = window.innerWidth <= 768;
+            const whatsappUrl = "https://wa.me/5511953016045?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20Quarten%20Ibirapuera.";
+
+            if (isMobile) {
+                // No celular: abre direto
+                window.open(whatsappUrl, '_blank');
+            } else {
+                // No PC: Troca a visualização (Swap View)
+                if (dynamicWrapper.classList.contains('active-qr')) {
+                    dynamicWrapper.classList.remove('active-qr');
+                } else {
+                    dynamicWrapper.classList.add('active-qr');
+                }
+            }
+        });
+
+        // Fecha ao clicar fora
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+
+        // Tecla ESC fecha
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePopup();
+            }
+        });
+
     </script>
 </body>
 </html>
