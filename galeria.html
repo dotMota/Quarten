@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria Private Resort | Quarten</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Manrope:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CORE SETTINGS --- */
+        :root {
+            --bg-dark: #0f0f0f;
+            --gold: #c5a065; 
+            --gold-dim: #8c734b;
+            --text-main: #eaeaea;
+            --text-sub: #a0a0a0;
+            --font-display: 'Cinzel', serif;
+            --font-body: 'Manrope', sans-serif;
+            --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .subtitle {
+            text-transform: uppercase; letter-spacing: 4px; font-size: 0.7rem; color: var(--gold);
+            margin-bottom: 1.5rem; display: block;
+        }
+        h2 { font-family: var(--font-display); font-weight: 400; line-height: 1.1; color: #fff; }
+        p { font-weight: 300; line-height: 1.8; color: var(--text-sub); }
+
+        /* --- GALLERY COMPONENT --- */
+        .resort-section {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            background: #050505;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        
+        .resort-wrapper { 
+            display: flex; 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+        }
+        
+        /* Intro Card (Fixo a Esquerda) */
+        .intro-card {
+            flex: 0 0 35%;
+            height: 100%;
+            background: #050505;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
+            padding: 0 5% 0 10%; 
+            z-index: 10; 
+            position: relative;
+            transition: flex-basis 1s var(--ease-expo), opacity 0.5s ease, padding 0.8s ease;
+            overflow: hidden;
+            cursor: pointer; /* Indica interatividade */
+        }
+        
+        /* Gallery Track Container */
+        .gallery-track-container {
+            flex: 1;
+            height: 100%;
+            position: relative; 
+            overflow: hidden; 
+            cursor: grab;
+        }
+        .gallery-track-container:active { cursor: grabbing; }
+
+        /* O Trilho das Imagens */
+        .gallery-track {
+            display: flex; 
+            height: 100%; 
+            align-items: center;
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            gap: 3vw;
+            will-change: transform;
+            padding-left: 2vw;
+        }
+
+        /* Cards Individuais */
+        .resort-card {
+            width: 40vw; 
+            height: 60vh; 
+            flex-shrink: 0;
+            position: relative;
+            
+            /* Anti-Flicker */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: transform, filter, opacity;
+            
+            transition: transform 0.8s ease, filter 0.8s ease, opacity 0.8s ease;
+            
+            filter: grayscale(100%) brightness(0.4);
+            opacity: 0.5; 
+            transform: scale(0.9) translateZ(0);
+            
+            border-right: 1px solid rgba(197, 160, 101, 0.3);
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+
+        /* Gradiente de Fundo */
+        .resort-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .resort-card img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            pointer-events: none;
+        }
+        
+        /* Informações no Card */
+        .resort-card .card-caption {
+            position: absolute; bottom: 2rem; left: 2rem;
+            opacity: 0; transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 2;
+            padding-right: 1rem;
+        }
+        .resort-card .card-caption h3 { 
+            font-size: 1.8rem;
+            margin: 0; 
+            color: #fff;
+            font-weight: 500;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.9);
+            margin-bottom: 0.3rem;
+        }
+        .resort-card .card-caption p { 
+            font-size: 1rem; 
+            margin: 0; 
+            color: var(--gold);
+            font-weight: 400;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+            letter-spacing: 1px;
+        }
+
+        /* ESTADO ATIVO */
+        .resort-card.active {
+            filter: grayscale(0%) brightness(1);
+            opacity: 1;
+            transform: scale(1.1) translateZ(0);
+            z-index: 5;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            border: 1px solid var(--gold);
+            border-right: 1px solid var(--gold);
+        }
+        .resort-card.active .card-caption { opacity: 1; }
+
+        /* ESTADO EXPANDIDO */
+        body.resort-expanded .intro-card {
+            flex-basis: 0;
+            opacity: 0; 
+            padding: 0;
+            pointer-events: none; 
+        }
+
+        /* --- LIGHTBOX SCROLLABLE --- */
+        .lightbox {
+            display: none; 
+            position: fixed; z-index: 10001; 
+            left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(0, 0, 0, 0.98); 
+            backdrop-filter: blur(10px);
+        }
+        .lightbox.active { display: flex; flex-direction: column; animation: fadeIn 0.3s; }
+        
+        .lightbox-track-container {
+            width: 100%;
+            height: 85%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            display: flex;
+            align-items: center;
+            scrollbar-width: none;
+        }
+        .lightbox-track-container::-webkit-scrollbar { display: none; }
+
+        .lightbox-track {
+            display: flex;
+            height: 100%;
+            align-items: center;
+        }
+
+        .lightbox-item {
+            width: 100vw;
+            height: 100%;
+            flex-shrink: 0;
+            scroll-snap-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .lightbox-item img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--gold-dim);
+        }
+
+        .lightbox-caption-box {
+            height: 15%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #fff;
+            text-align: center;
+            pointer-events: none;
+        }
+        .lightbox-caption-title {
+            font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 5px;
+        }
+        .lightbox-caption-desc {
+            font-family: var(--font-body); color: var(--gold); font-size: 0.9rem;
+        }
+
+        .lightbox-close {
+            position: absolute; top: 20px; right: 35px; color: #fff; z-index: 10002;
+            font-size: 40px; font-weight: 300; transition: 0.3s; cursor: pointer;
+            line-height: 1;
+        }
+        .lightbox-close:hover { color: var(--gold); transform: rotate(90deg); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .resort-section { height: 60vh; }
+            .resort-card { width: 70vw; height: 50vh; }
+            .intro-card { 
+                position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+                background: rgba(5,5,5,0.9); padding: 2rem;
+                flex: none; transition: opacity 0.5s, visibility 0.5s;
+            }
+            body.resort-expanded .intro-card { opacity: 0; visibility: hidden; }
+            .gallery-track-container { width: 100%; flex: none; }
+            .gallery-track { padding-left: 0; }
+            
+            .lightbox-item img { max-width: 95%; }
+            .lightbox-caption-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="resort-section" id="resort">
+        <div class="resort-wrapper">
+            
+            <div class="intro-card">
+                <span class="subtitle">Private Resort</span>
+                <h2 style="font-size: 3rem; margin: 1rem 0;">Sua Ilha <br>Particular</h2>
+                <p>Deslize para explorar <span style="font-size: 1.5rem;">→</span></p>
+            </div>
+            
+            <div class="gallery-track-container" id="galleryContainer">
+                <div class="gallery-track">
+                    <div class="resort-card" data-title="Kids Club" data-desc="Universo Lúdico" data-index="0">
+                        <img src="media/brinquedoteca.webp" alt="Brinquedoteca">
+                        <div class="card-caption"><h3>Kids Club</h3><p>Universo Lúdico</p></div>
+                    </div>
+                    
+                    <div class="resort-card" data-title="Quadra Oficial" data-desc="Medidas Oficiais (36x18m)" data-index="1">
+                        <img src="media/quadra.webp" alt="Quadra de Tênis">
+                        <div class="card-caption"><h3>Quadra Oficial</h3><p>Medidas Oficiais (36x18m)</p></div>
+                    </div>
+
+                    <div class="resort-card" data-title="Grand Lobby" data-desc="Recepção Monumental" data-index="2">
+                        <img src="media/lobby.webp" alt="Lobby">
+                        <div class="card-caption"><h3>Grand Lobby</h3><p>Recepção Monumental</p></div>
+                    </div>
+
+                    <div class="resort-card" data-title="Fitness by SETT" data-desc="Consultoria Exclusiva" data-index="3">
+                        <img src="media/fitness.webp" alt="Academia">
+                        <div class="card-caption"><h3>Fitness by SETT</h3><p>Consultoria Exclusiva</p></div>
+                    </div>
+
+                    <div class="resort-card" data-title="Wellness Spa" data-desc="Santuário de Relaxamento" data-index="4">
+                        <img src="media/wellness.webp" alt="Wellness">
+                        <div class="card-caption"><h3>Wellness Spa</h3><p>Santuário de Relaxamento</p></div>
+                    </div>
+
+                    <div class="resort-card" data-title="Piscina Outdoor" data-desc="Oásis com Solarium" data-index="5">
+                        <img src="media/psicinaaerea.webp" alt="Piscina Externa">
+                        <div class="card-caption"><h3>Piscina Outdoor</h3><p>Oásis com Solarium</p></div>
+                    </div>
+
+                    <div class="resort-card" data-title="Raia Coberta" data-desc="25m Climatizada" data-index="6">
+                        <img src="media/piscinacoberta.webp" alt="Piscina Coberta">
+                        <div class="card-caption"><h3>Raia Coberta</h3><p>25m Climatizada</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="lightbox" class="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <div class="lightbox-track-container" id="lightboxScrollContainer">
+            <div class="lightbox-track" id="lightboxTrack">
+                </div>
+        </div>
+        <div class="lightbox-caption-box">
+            <div class="lightbox-caption-title" id="lbTitle"></div>
+            <div class="lightbox-caption-desc" id="lbDesc"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÃO DA GALERIA ---
+        const container = document.getElementById('galleryContainer');
+        const track = container.querySelector('.gallery-track');
+        const introCard = document.querySelector('.intro-card'); // Seleciona o card de introdução
+        const originalCards = Array.from(track.querySelectorAll('.resort-card'));
+        
+        // Clonagem para loop infinito
+        const cloneSetLeft = originalCards.map(c => c.cloneNode(true));
+        const cloneSetRight = originalCards.map(c => c.cloneNode(true));
+        
+        track.innerHTML = '';
+        cloneSetLeft.forEach(c => track.appendChild(c));
+        originalCards.forEach(c => track.appendChild(c)); 
+        cloneSetRight.forEach(c => track.appendChild(c));
+
+        const allCards = Array.from(track.querySelectorAll('.resort-card'));
+        const totalOriginals = originalCards.length;
+        
+        let currentIndex = totalOriginals + 1; // Começa no índice 1 (Quadra) do set original
+        
+        let isDragging = false;
+        let startX = 0;
+        let startScroll = 0;
+        let autoPlayResort;
+        let isTransitioning = false;
+        let cardWidth = 0, gap = 0;
+
+        // --- INICIALIZAÇÃO ---
+        function init() {
+            allCards.forEach(card => {
+                card.onclick = function() {
+                    const realIndex = parseInt(this.getAttribute('data-index'));
+                    openLightbox(realIndex);
+                };
+            });
+
+            updateDimensions();
+            setPositionByIndex(currentIndex, false);
+            startAutoPlay();
+            window.addEventListener('resize', () => {
+                updateDimensions();
+                setPositionByIndex(currentIndex, false);
+            });
+
+            populateLightbox();
+        }
+
+        function updateDimensions() {
+            const cardEl = allCards[0];
+            const rect = cardEl.getBoundingClientRect();
+            cardWidth = rect.width;
+            
+            const rect2 = allCards[1].getBoundingClientRect();
+            gap = rect2.left - rect.right;
+            if (gap < 0) gap = window.innerWidth * 0.03; 
+        }
+
+        function setPositionByIndex(index, animate = true) {
+            const centerContainer = container.offsetWidth / 2;
+            const cardCenterPos = (cardWidth + gap) * index + (cardWidth / 2);
+            const translate = centerContainer - cardCenterPos;
+            
+            if (animate) {
+                track.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                isTransitioning = true;
+            } else {
+                track.style.transition = 'none';
+                isTransitioning = false;
+            }
+            track.style.transform = `translateX(${translate}px)`;
+            
+            allCards.forEach(c => c.classList.remove('active'));
+            if(allCards[index]) allCards[index].classList.add('active');
+        }
+
+        // --- LOOP INFINITO ---
+        track.addEventListener('transitionend', () => {
+            if (!isTransitioning) return;
+            
+            if (currentIndex >= totalOriginals * 2) {
+                track.style.transition = 'none';
+                currentIndex = currentIndex - totalOriginals;
+                setPositionByIndex(currentIndex, false);
+            }
+            else if (currentIndex < totalOriginals) {
+                track.style.transition = 'none';
+                currentIndex = currentIndex + totalOriginals;
+                setPositionByIndex(currentIndex, false);
+            }
+            isTransitioning = false;
+        });
+
+        // --- AUTOPLAY ---
+        function startAutoPlay() {
+            stopAutoPlay();
+            autoPlayResort = setInterval(() => {
+                if (!isDragging && !document.hidden) {
+                    currentIndex++;
+                    setPositionByIndex(currentIndex, true);
+                }
+            }, 3500);
+        }
+
+        function stopAutoPlay() {
+            clearInterval(autoPlayResort);
+        }
+
+        // --- DRAG & DROP & INTRO EXPANSION ---
+        
+        // Função para expandir a galeria (usada tanto no track quanto no intro)
+        function triggerExpansion() {
+            document.body.classList.add('resort-expanded');
+            stopAutoPlay();
+            setTimeout(updateDimensions, 50); // Recalcula dimensões após layout mudar
+        }
+
+        // Listeners no Intro Card (NOVO)
+        introCard.addEventListener('mousedown', triggerExpansion);
+        introCard.addEventListener('touchstart', triggerExpansion);
+
+        // Listeners no Container da Galeria
+        container.addEventListener('mousedown', dragStart);
+        container.addEventListener('touchstart', dragStart);
+
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('touchmove', dragMove);
+
+        window.addEventListener('mouseup', dragEnd);
+        window.addEventListener('touchend', dragEnd);
+
+        function dragStart(e) {
+            triggerExpansion(); // Garante expansão ao arrastar
+            
+            isDragging = true;
+            startX = getPositionX(e);
+            
+            const style = window.getComputedStyle(track);
+            const matrix = new WebKitCSSMatrix(style.transform);
+            startScroll = matrix.m41;
+            
+            track.style.transition = 'none';
+            container.style.cursor = 'grabbing';
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = getPositionX(e);
+            const walk = (x - startX);
+            track.style.transform = `translateX(${startScroll + walk}px)`;
+            
+            updateActiveCardDynamic(); 
+        }
+
+        function dragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            container.style.cursor = 'grab';
+            
+            const currentTrans = new WebKitCSSMatrix(window.getComputedStyle(track).transform).m41;
+            const centerContainer = container.offsetWidth / 2;
+            
+            const approxIndex = (centerContainer - currentTrans - (cardWidth/2)) / (cardWidth + gap);
+            currentIndex = Math.round(approxIndex);
+            
+            setPositionByIndex(currentIndex, true);
+        }
+
+        function getPositionX(e) {
+            return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+        }
+
+        function updateActiveCardDynamic() {
+            const centerPoint = container.getBoundingClientRect().left + container.offsetWidth / 2;
+            let closest = null;
+            let minD = Infinity;
+            
+            allCards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const center = rect.left + rect.width/2;
+                const dist = Math.abs(center - centerPoint);
+                card.classList.remove('active');
+                if(dist < minD) { minD = dist; closest = card; }
+            });
+            if(closest) closest.classList.add('active');
+        }
+
+        // --- LIGHTBOX ---
+        const lightbox = document.getElementById('lightbox');
+        const lbTrack = document.getElementById('lightboxTrack');
+        const lbContainer = document.getElementById('lightboxScrollContainer');
+        const lbTitle = document.getElementById('lbTitle');
+        const lbDesc = document.getElementById('lbDesc');
+        const lbClose = document.querySelector('.lightbox-close');
+
+        function populateLightbox() {
+            lbTrack.innerHTML = '';
+            originalCards.forEach((card, i) => {
+                const imgSrc = card.querySelector('img').src;
+                const title = card.getAttribute('data-title');
+                const desc = card.getAttribute('data-desc');
+                
+                const item = document.createElement('div');
+                item.className = 'lightbox-item';
+                item.setAttribute('data-title', title);
+                item.setAttribute('data-desc', desc);
+                
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.draggable = false;
+                
+                item.appendChild(img);
+                lbTrack.appendChild(item);
+            });
+        }
+
+        function openLightbox(index) {
+            if (Math.abs(startX - (window.event?.pageX || startX)) > 10) return;
+
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
+            document.body.style.overflow = 'hidden';
+
+            lightbox.classList.add('active');
+            
+            setTimeout(() => {
+                const itemWidth = lbContainer.offsetWidth;
+                lbContainer.scrollTo({ left: index * itemWidth, behavior: 'auto' });
+                updateLightboxCaption(index);
+            }, 10);
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }
+
+        lbContainer.addEventListener('scroll', () => {
+            const index = Math.round(lbContainer.scrollLeft / lbContainer.offsetWidth);
+            updateLightboxCaption(index);
+        });
+
+        function updateLightboxCaption(index) {
+            const items = lbTrack.children;
+            if(items[index]) {
+                lbTitle.innerText = items[index].getAttribute('data-title');
+                lbDesc.innerText = items[index].getAttribute('data-desc');
+            }
+        }
+
+        lbClose.onclick = closeLightbox;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+        });
+
+        init();
+
+    </script>
+</body>
+</html>
