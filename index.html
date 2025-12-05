@@ -168,27 +168,156 @@
             -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15); margin-right: 4rem; text-transform: uppercase;
         }
 
-        /* --- ASYMMETRY (O LEGADO) --- */
+        /* --- ASYMMETRY (O LEGADO) - CAROUSEL --- */
         .asym-section { padding: 10rem 10%; position: relative; }
         .asym-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center; }
-        .img-reveal-wrapper { position: relative; overflow: hidden; height: 70vh; cursor: zoom-in; }
-        .img-reveal-wrapper img {
-            width: 100%; height: 100%; object-fit: cover; transform: scale(1.2); transition: transform 1.5s var(--ease-expo);
+        .img-reveal-wrapper { 
+            position: relative; overflow: hidden; height: 70vh; 
+            cursor: grab;
         }
+        .img-reveal-wrapper:active { cursor: grabbing; }
+
+        .legacy-track {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            will-change: transform;
+        }
+
+        .legacy-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .legacy-slide img {
+            width: 100%; height: 100%; object-fit: cover; 
+            transform: scale(1.2); transition: transform 1.5s var(--ease-expo);
+            pointer-events: none;
+        }
+
         .img-reveal-wrapper::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-dark); transform: scaleY(1); transform-origin: bottom; transition: transform 1s var(--ease-expo);
+            z-index: 5; pointer-events: none;
         }
         .asym-section.active .img-reveal-wrapper::after { transform: scaleY(0); }
-        .asym-section.active .img-reveal-wrapper img { transform: scale(1); }
+        .asym-section.active .legacy-slide img { transform: scale(1); }
+
         .floating-content {
-            background: rgba(20, 20, 20, 0.95); padding: 4rem; margin-left: -100px; z-index: 2;
+            background: rgba(20, 20, 20, 0.95); padding: 4rem; margin-left: -100px; z-index: 6;
             border-left: 1px solid var(--gold-dim); backdrop-filter: blur(10px); position: relative;
             margin-top: 100px; opacity: 0; transform: translateY(30px); transition: all 1s ease 0.5s;
         }
         .asym-section.active .floating-content { opacity: 1; transform: translateY(0); }
 
-        /* --- GALLERY RESORT (NOVA VERSÃO) --- */
+
+        /* --- TEAM SECTION (MENTES BRILHANTES) - DESIGN E HIERARQUIA ATUALIZADOS --- */
+        .team-section { 
+            padding: 10rem 10%; 
+            border-top: 1px solid #222;
+            display: flex; 
+            flex-direction: column; 
+            gap: 4rem; 
+        }
+        
+        .team-header-wrapper {
+            position: relative;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .team-section h2 {
+            font-size: clamp(2.5rem, 4vw, 3.5rem); 
+            margin-bottom: 0;
+            margin-top: 0.5rem;
+            color: #fff;
+        }
+
+        .team-carousel-container {
+            position: relative;
+            min-height: 500px; 
+            width: 100%;
+        }
+
+        .team-slide {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; pointer-events: none; transform: translateX(20px);
+            transition: opacity 0.8s ease, transform 0.8s var(--ease-expo);
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 6rem;
+            align-items: center;
+        }
+        
+        .team-slide.active {
+            opacity: 1; pointer-events: all; transform: translateX(0); position: relative;
+        }
+
+        .team-img-wrapper {
+            height: 500px; width: 100%; overflow: hidden; position: relative;
+            border: 1px solid rgba(197, 160, 101, 0.2);
+        }
+        
+        .team-img-wrapper img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%); transition: filter 0.8s, transform 0.8s;
+        }
+        
+        .team-slide.active .team-img-wrapper img {
+            filter: grayscale(0%); transform: scale(1.05);
+        }
+
+        .team-info-content {
+            padding-right: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .team-role { 
+            font-size: 0.75rem; 
+            color: var(--text-sub); 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            margin-bottom: 1rem; 
+            display: block; 
+            font-family: var(--font-body);
+            border-left: 1px solid var(--gold); 
+            padding-left: 10px;
+        }
+
+        .team-name { 
+            font-size: 2.2rem; 
+            font-family: var(--font-display); 
+            color: var(--gold); 
+            margin-bottom: 1.5rem; 
+            line-height: 1.2;
+        }
+
+        .team-desc { 
+            font-size: 1rem; 
+            color: #ccc; 
+            line-height: 1.8; 
+            max-width: 90%;
+        }
+        
+        .team-progress-bar {
+            position: absolute; 
+            bottom: -2rem; 
+            left: 0; 
+            height: 1px; 
+            background: #333;
+            width: calc(50% - 3rem); /* Largura apenas do texto no desktop */
+        }
+        .team-progress-fill {
+            height: 100%; background: var(--gold); width: 0%; transition: width 0.3s linear;
+        }
+
+
+        /* --- GALLERY RESORT --- */
         .resort-section {
             height: 80vh;
             width: 100%;
@@ -200,7 +329,7 @@
         }
         .resort-wrapper { display: flex; width: 100%; height: 100%; position: relative; }
         
-        /* Intro Card (Fixo a Esquerda) */
+        /* Intro Card */
         .intro-card {
             flex: 0 0 35%;
             height: 100%;
@@ -216,7 +345,7 @@
             cursor: pointer;
         }
         
-        /* Gallery Track Container */
+        /* Gallery Track */
         .gallery-track-container {
             flex: 1;
             height: 100%;
@@ -227,7 +356,6 @@
         }
         .gallery-track-container:active { cursor: grabbing; }
 
-        /* O Trilho das Imagens */
         .gallery-track {
             display: flex; 
             height: 100%; 
@@ -240,31 +368,24 @@
             padding-left: 2vw;
         }
 
-        /* Cards Individuais */
         .resort-card {
             width: 40vw; 
             height: 60vh; 
             flex-shrink: 0;
             position: relative;
-            
-            /* Anti-Flicker */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             backface-visibility: hidden;
             will-change: transform, filter, opacity;
-            
             transition: transform 0.8s ease, filter 0.8s ease, opacity 0.8s ease;
-            
             filter: grayscale(100%) brightness(0.4);
             opacity: 0.5; 
             transform: scale(0.9) translateZ(0);
-            
             border-right: 1px solid rgba(197, 160, 101, 0.3);
             overflow: hidden;
             cursor: zoom-in;
         }
 
-        /* Gradiente de Fundo */
         .resort-card::after {
             content: '';
             position: absolute;
@@ -285,7 +406,6 @@
             pointer-events: none;
         }
         
-        /* Informações no Card */
         .resort-card .card-caption {
             position: absolute; bottom: 2rem; left: 2rem;
             opacity: 0; transition: opacity 0.5s;
@@ -302,7 +422,6 @@
             text-shadow: 0 2px 10px rgba(0,0,0,0.9); letter-spacing: 1px;
         }
 
-        /* ESTADO ATIVO (CENTRAL) */
         .resort-card.active {
             filter: grayscale(0%) brightness(1);
             opacity: 1;
@@ -314,7 +433,6 @@
         }
         .resort-card.active .card-caption { opacity: 1; }
 
-        /* ESTADO EXPANDIDO */
         body.resort-expanded .intro-card {
             flex-basis: 0; opacity: 0; padding: 0; pointer-events: none; 
         }
@@ -336,9 +454,8 @@
         }
         .plan-display-area.active { display: grid; opacity: 1; transform: translateY(0); }
 
-        /* Carousel Styles */
         .plan-carousel-container {
-            position: relative; width: 100%; height: 0; padding-bottom: 75%; /* Ratio 4:3 */
+            position: relative; width: 100%; height: 0; padding-bottom: 75%;
             background: #151515; border: 1px solid #222; overflow: hidden;
         }
         .plan-carousel-track { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
@@ -349,7 +466,6 @@
         }
         .plan-slide.active { opacity: 1; pointer-events: all; z-index: 1; }
         
-        /* Plan Images */
         .plan-slide img {
             width: 100%; height: 100%; object-fit: contain; padding: 1rem; cursor: zoom-in;
         }
@@ -368,24 +484,13 @@
         }
         .nav-btn:hover { background: var(--gold); color: #000; }
 
-        /* Ficha Técnica */
         .plan-details ul { list-style: none; margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
         .plan-details li { padding: 0; border: none; display: flex; flex-direction: column; color: var(--text-main); }
         .plan-details li span.label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-sub); margin-bottom: 0.3rem; }
         .plan-details li span.value { font-size: 1.1rem; font-weight: 500; color: #fff; }
         .plan-details li span.gold-text { color: var(--gold); }
 
-        /* --- TEAM, STATS, LOCATION, CTA, TRUST --- */
-        .team-section { padding: 10rem 10%; border-top: 1px solid #222; }
-        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4rem; margin-top: 4rem; }
-        .team-card { position: relative; }
-        .team-img-frame { height: 400px; overflow: hidden; margin-bottom: 1.5rem; filter: grayscale(100%); transition: 0.5s; }
-        .team-card:hover .team-img-frame { filter: grayscale(0%); }
-        .team-img-frame img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .team-card:hover .team-img-frame img { transform: scale(1.05); }
-        .team-role { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; display: block; }
-        .team-name { font-size: 1.5rem; font-family: var(--font-display); color: #fff; }
-
+        /* --- STATS, LOCATION, CTA, TRUST --- */
         .stats-section { padding: 10rem 10%; display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; border-top: 1px solid #222; }
         .stat-item h3 { font-size: 4rem; color: var(--gold); margin-bottom: 0.5rem; }
 
@@ -553,7 +658,7 @@
 
         /* MEDIA QUERIES */
         @media (max-width: 768px) {
-            .asym-section, .plans-section, .team-section, .stats-section, .cta-final-section, .trust-banner { padding: 5rem 5%; }
+            .asym-section, .plans-section, .stats-section, .cta-final-section, .trust-banner { padding: 5rem 5%; }
             header { padding: 1.5rem; }
             .menu-overlay { grid-template-columns: 1fr; }
             .menu-visuals { display: none; }
@@ -585,6 +690,16 @@
             .plan-carousel-container { padding-bottom: 75%; }
             .plan-details ul { grid-template-columns: 1fr 1fr; gap: 1rem; } 
             
+            /* Ajuste Mobile Team Section */
+            .team-section { padding: 5rem 5%; gap: 2rem; }
+            .team-slide { grid-template-columns: 1fr; gap: 2rem; }
+            .team-img-wrapper { height: 350px; order: -1; }
+            .team-info-content { padding-right: 0; order: 2; }
+            .team-header-wrapper { text-align: left; margin-bottom: 1rem; padding-bottom: 1.5rem; }
+            .team-section h2 { font-size: 2.5rem; }
+            .team-name { font-size: 1.8rem; }
+            .team-progress-bar { width: 100%; }
+
             .popup-content { padding: 2rem 1.5rem; max-height: 90vh; overflow-y: auto; width: 95%; margin: 0 auto; }
             .broker-container { flex-direction: column; gap: 2rem; }
             .broker-info { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-right: 0; padding-bottom: 2rem; width: 100%; }
@@ -643,7 +758,7 @@
         <div class="hero-content">
             <span class="subtitle">The Rare Collection</span>
             <h1><span style="font-size: 0.4em;">CONCRETO E NATUREZA.</span><br> <span style="font-style:italic; font-family:var(--font-body); font-weight:200; font-size: 0.8em;"></span>Quarten</h1>
-            <p>Um quarteirão inteiro deNatureza Rarasenhado para redefinir o privilégio de viver no Ibirapuera.</p>
+            <p>Um quarteirão inteiro de natureza desenhado para redefinir o privilégio de viver no Ibirapuera.</p>
         </div>
     </section>
 
@@ -655,8 +770,18 @@
 
     <section class="asym-section scroll-trigger" id="conceito">
         <div class="asym-grid">
-            <div class="img-reveal-wrapper">
-                <img src="media/vistaaerea.webp" alt="Arquitetura - Clique para ampliar" onclick="openLightbox(0)" data-caption="Arquitetura Exclusiva" style="object-position: bottom left">
+            <div class="img-reveal-wrapper" id="legacyWrapper">
+                <div class="legacy-track" id="legacyTrack">
+                    <div class="legacy-slide">
+                         <img src="media/vistaaerea.webp" alt="Arquitetura Exclusiva" data-caption="Arquitetura Exclusiva" style="object-position: bottom left">
+                    </div>
+                    <div class="legacy-slide">
+                        <img src="media/fachadavertical.webp" style="object-position: center bottom;" alt="Boulevard Privativo" data-caption="Boulevard Privativo">
+                   </div>
+                   <div class="legacy-slide">
+                        <img src="media/aerea.webp" alt="Living Integrado" data-caption="Living Integrado">
+                   </div>
+                </div>
             </div>
             <div class="floating-content">
                 <span class="subtitle">O Legado</span>
@@ -836,19 +961,46 @@
     </section>
 
     <section class="team-section scroll-trigger" id="time">
-        <div class="team-grid">
-            <div class="team-card hover-target">
-                <div class="team-img-frame"><img src="media/arquiteto.png" alt="Arquitetura"></div><span class="team-role">Arquitetura</span>
-                <h3 class="team-name">Königsberger Vannucchi</h3>
+        
+        <div class="team-header-wrapper">
+            <span class="subtitle">Curadoria</span>
+            <h2>Mentes <br>Brilhantes</h2>
+        </div>
+        
+        <div class="team-carousel-container" id="teamCarousel">
+            <div class="team-slide active">
+                <div class="team-info-content">
+                    <span class="team-role">Arquitetura</span>
+                    <h3 class="team-name">Königsberger Vannucchi</h3>
+                    <p class="team-desc">Um ícone da arquitetura contemporânea brasileira. Para o Quarten, desenhamos uma fachada viva que dialoga com o entorno, criando uma transição suave entre a malha urbana e o refúgio privado.</p>
+                </div>
+                <div class="team-img-wrapper hover-target">
+                    <img src="media/arquiteto.png" alt="Arquitetura">
+                </div>
             </div>
-            <div class="team-card hover-target">
-                <div class="team-img-frame"><img src="media/paisagismo.jpg" alt="Paisagismo" style="object-position: top center"></div><span class="team-role">Paisagismo</span>
-                <h3 class="team-name">Benedito Abbud</h3>
+            
+            <div class="team-slide">
+                <div class="team-info-content">
+                    <span class="team-role">Paisagismo</span>
+                    <h3 class="team-name">Benedito Abbud</h3>
+                    <p class="team-desc">Criamos uma verdadeira ilha de biodiversidade. O paisagismo não é apenas visual, é sensorial. Trouxemos a essência do Parque Ibirapuera para dentro do empreendimento.</p>
+                </div>
+                <div class="team-img-wrapper hover-target">
+                    <img src="media/paisagismo.jpg" alt="Paisagismo" style="object-position: top center">
+                </div>
             </div>
-            <div class="team-card hover-target">
-                <div class="team-img-frame"><img src="media/interiores2.png" alt="Design" style="object-position: top center"></div><span class="team-role">Interiores</span>
-                <h3 class="team-name">Chris Silveira</h3>
+            
+            <div class="team-slide">
+                <div class="team-info-content">
+                    <span class="team-role">Interiores</span>
+                    <h3 class="team-name">Chris Silveira</h3>
+                    <p class="team-desc">Sofisticação em cada detalhe. O projeto de interiores busca a atemporalidade através de materiais nobres e tons sóbrios. Cada ambiente comum foi pensado como uma extensão da própria casa.</p>
+                </div>
+                <div class="team-img-wrapper hover-target">
+                    <img src="media/interiores2.png" alt="Design" style="object-position: top center">
+                </div>
             </div>
+            <div class="team-progress-bar"><div class="team-progress-fill" id="teamProgress"></div></div>
         </div>
     </section>
 
@@ -932,7 +1084,7 @@
             <button class="popup-close" id="close-popup-btn" onclick="closePopup()">×</button>
             <div class="broker-container">
                 <div class="broker-info">
-                    <img src="https://placehold.co/150x150/111/c5a065?text=Mota" alt="Corretor Mota" class="broker-photo">
+                    <img src="media/perfilcrop.png" alt="Corretor Mota" class="broker-photo">
                     <h3 class="broker-name">Mota</h3>
                     <p class="broker-creci">Trisul Vendas <br> <span style="font-size: 0.7em; opacity: 0.8;">CRECI 315675</span></p>
                     <div class="contact-details">
@@ -1181,6 +1333,163 @@
             });
             if(closest) closest.classList.add('active');
         }
+
+        // --- TEAM CAROUSEL LOGIC (NO RESET ON HOVER) ---
+        function initTeamCarousel() {
+            const slides = document.querySelectorAll('#teamCarousel .team-slide');
+            const teamContainer = document.getElementById('teamCarousel'); 
+            const teamProgressBar = document.getElementById('teamProgress');
+            const teamProgressContainer = teamProgressBar.parentElement;
+            
+            let currentTeamIndex = 0;
+            let slideTimeout;
+            let isHovering = false;
+
+            const NORMAL_SPEED = 15000; // 15s
+            const SLOW_SPEED = 60000;   // 60s
+
+            function nextSlide() {
+                // Avança
+                currentTeamIndex = (currentTeamIndex + 1) % slides.length;
+                
+                // Atualiza Classes
+                slides.forEach(s => s.classList.remove('active'));
+                slides[currentTeamIndex].classList.add('active');
+
+                // Reseta a barra para 0 (instantâneo)
+                teamProgressBar.style.transition = 'none';
+                teamProgressBar.style.width = '0%';
+                teamProgressBar.offsetHeight; // Força reflow
+
+                // Anima novo slide
+                runAnimation(isHovering ? SLOW_SPEED : NORMAL_SPEED);
+            }
+
+            function runAnimation(totalDuration) {
+                if (slideTimeout) clearTimeout(slideTimeout);
+
+                // Pega largura atual
+                const currentWidth = teamProgressBar.offsetWidth;
+                const totalWidth = teamProgressContainer.offsetWidth;
+                
+                if (totalWidth === 0) return; 
+
+                // Calcula quanto falta
+                const progressRatio = currentWidth / totalWidth;
+                const remainingRatio = 1 - progressRatio;
+
+                // Calcula tempo restante
+                const timeRemaining = totalDuration * remainingRatio;
+
+                if (timeRemaining <= 50) {
+                    nextSlide(); 
+                    return;
+                }
+
+                // Congela
+                teamProgressBar.style.transition = 'none';
+                teamProgressBar.style.width = `${currentWidth}px`;
+                teamProgressBar.offsetHeight; 
+
+                // Anima até o fim
+                teamProgressBar.style.transition = `width ${timeRemaining}ms linear`;
+                teamProgressBar.style.width = '100%';
+
+                // Agenda próxima troca
+                slideTimeout = setTimeout(nextSlide, timeRemaining);
+            }
+
+            // Inicia primeiro slide
+            slides[currentTeamIndex].classList.add('active');
+            runAnimation(NORMAL_SPEED);
+
+            // Eventos Hover
+            teamContainer.addEventListener('mouseenter', () => {
+                isHovering = true;
+                runAnimation(SLOW_SPEED); 
+            });
+
+            teamContainer.addEventListener('mouseleave', () => {
+                isHovering = false;
+                runAnimation(NORMAL_SPEED);
+            });
+        }
+        initTeamCarousel();
+
+        // --- LEGACY CAROUSEL (INVISIBLE + DRAG) LOGIC ---
+        function initLegacyCarousel() {
+            const wrapper = document.getElementById('legacyWrapper');
+            const track = document.getElementById('legacyTrack');
+            const slides = track.querySelectorAll('.legacy-slide');
+            const totalSlides = slides.length;
+            let currentIndex = 0;
+            let autoPlayInterval;
+            
+            let isLegacyDragging = false;
+            let startLegacyX = 0;
+            let currentTranslate = 0;
+            let prevTranslate = 0;
+
+            function updatePosition() {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                track.style.transition = 'transform 1s cubic-bezier(0.19, 1, 0.22, 1)';
+            }
+
+            function startLegacyAuto() {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = setInterval(() => {
+                    currentIndex++;
+                    if (currentIndex >= totalSlides) currentIndex = 0;
+                    updatePosition();
+                }, 4000);
+            }
+            
+            wrapper.addEventListener('mousedown', touchStart);
+            wrapper.addEventListener('touchstart', touchStart);
+            wrapper.addEventListener('mousemove', touchMove);
+            wrapper.addEventListener('touchmove', touchMove);
+            wrapper.addEventListener('mouseup', touchEnd);
+            wrapper.addEventListener('mouseleave', () => { if(isLegacyDragging) touchEnd() });
+            wrapper.addEventListener('touchend', touchEnd);
+
+            function touchStart(e) {
+                isLegacyDragging = true;
+                clearInterval(autoPlayInterval);
+                startLegacyX = getPositionX(e);
+                wrapper.style.cursor = 'grabbing';
+                track.style.transition = 'none';
+                prevTranslate = -currentIndex * wrapper.offsetWidth;
+            }
+
+            function touchMove(e) {
+                if(!isLegacyDragging) return;
+                const currentX = getPositionX(e);
+                const diff = currentX - startLegacyX;
+                currentTranslate = prevTranslate + diff;
+                track.style.transform = `translateX(${currentTranslate}px)`;
+            }
+
+            function touchEnd(e) {
+                if(!isLegacyDragging) return;
+                isLegacyDragging = false;
+                wrapper.style.cursor = 'grab';
+                const movedBy = currentTranslate - prevTranslate;
+                
+                if (movedBy < -100 && currentIndex < totalSlides - 1) currentIndex++;
+                else if (movedBy > 100 && currentIndex > 0) currentIndex--;
+                
+                updatePosition();
+                
+                if (Math.abs(movedBy) < 10) {
+                     openLightbox(0); 
+                }
+                
+                startLegacyAuto();
+            }
+
+            startLegacyAuto();
+        }
+        initLegacyCarousel();
 
         // --- LIGHTBOX ---
         const lightbox = document.getElementById('lightbox');
